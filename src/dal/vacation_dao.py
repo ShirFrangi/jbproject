@@ -1,5 +1,5 @@
 # built-in packages
-from typing import List, Optional
+from typing import List
 from datetime import date
 
 # internal packages
@@ -21,14 +21,14 @@ class VacationDAO:
         Returns: List[dict]: A list of dictionaries representing the vacations in the table. Each dictionary contains column-value pairs for a vacation.
         """
         with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
-            query = SQL("SELECT * FROM {};").format(Identifier(self.table_name))
+            query = SQL("SELECT * FROM {} order by {};").format(Identifier(self.table_name), Identifier("vacation_start_date"))
             cur.execute(query)
             result = cur.fetchall()
             
         return result
 
 
-    def add_vacation(self, country_id: int, vacation_info: str, vacation_start_date: tuple, vacation_end_date: tuple, price: str, photo_file_path: str) -> dict:
+    def add_vacation(self, country_id: int, vacation_info: str, vacation_start_date: tuple, vacation_end_date: tuple, price: int, photo_file_path: str) -> dict:
         """
         Add a new vacation to the 'vacations' table with the provided details.
         Args: country_id (int), vacation_info (str), vacation_start_date (tuple), vacation_end_date (tuple), price (str), photo_file_path (str).
@@ -49,7 +49,7 @@ class VacationDAO:
         return result
         
                 
-    def get_vacation_by_id(self, vacation_id: int) -> Optional[dict]:
+    def get_vacation_by_id(self, vacation_id: int) -> dict | None:
         """
         Retrieves a vacation from the 'vacations' table by vacation_id.
         Args: vacation_id (int)

@@ -1,5 +1,5 @@
 # built-in packages
-from typing import List, Optional
+from typing import List
 
 # internal packages
 from src.dal.database import db_conn
@@ -45,7 +45,7 @@ class LikeDAO:
         return result
         
         
-    def get_like_by_id(self, like_id: int) -> Optional[dict]:
+    def get_like_by_id(self, like_id: int) -> dict | None:
         """
         Retrieves a like from the 'likes' table by like_id.
         Args: user_id (int)
@@ -74,17 +74,18 @@ class LikeDAO:
             return f"Updated like with like_id {like_id}." if cur.rowcount == 1 else f"Update like with like_id {like_id} failed."
         
         
-    def delete_like_by_id(self, like_id: int) -> str:
+    def delete_like(self, user_id: int, vacation_id: id) -> str:
         """
         Deletes a like from the 'likes' table by like_id.
         Args: like_id (int)
         Returns: str: A message indicating whether the deletion was successful.
         """
         with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
-            query = SQL("DELETE FROM {} WHERE {} = {}").format(Identifier(self.table_name), Identifier("like_id"), Placeholder())
-            cur.execute(query, (like_id,))
+            query = SQL("DELETE FROM {} WHERE {} = {} AND WHERE {} = {}").format(Identifier(self.table_name), Identifier("user_id"), Placeholder(),
+                                                                                 Identifier("vacation_id"), Placeholder())
+            cur.execute(query, (user_id, vacation_id))
             db_conn.commit()
 
-            return f"Deleted like with like_id {like_id}." if cur.rowcount == 1 else f"Deletion like with like_id {like_id} failed."
+            return f"Deleted like for user with user_id {user_id}." if cur.rowcount == 1 else f"Deletion like for user with user_id {user_id} failed."
 
 # 

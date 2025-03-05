@@ -1,5 +1,5 @@
 # built-in packages
-from typing import List, Optional
+from typing import List
 
 # internal packages
 from src.dal.database import db_conn
@@ -43,7 +43,7 @@ class CountryDAO:
         return result
 
         
-    def get_country_by_id(self, country_id: int) -> Optional[dict]:
+    def get_country_by_id(self, country_id: int) -> dict | None:
         """
         Retrieves a country from the 'countries' table by country_id.
         Args: country_id (int)

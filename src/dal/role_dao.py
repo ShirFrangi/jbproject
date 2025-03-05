@@ -1,5 +1,5 @@
 # built-in packages
-from typing import List, Optional
+from typing import List
 
 # internal packages
 from src.dal.database import db_conn
@@ -41,7 +41,7 @@ class RoleDAO:
         return result
         
         
-    def get_role_by_id(self, role_id: int) -> Optional[dict]:
+    def get_role_by_id(self, role_id: int) -> dict | None:
         """
         Retrieves a role from the 'roles' table by role_id.
         Args: role_id (int).
