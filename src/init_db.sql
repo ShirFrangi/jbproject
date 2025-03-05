@@ -1,10 +1,8 @@
--- Create roles table
 CREATE TABLE roles (
     role_id SERIAL PRIMARY KEY, 
     role_name VARCHAR(20) UNIQUE
 );
 
--- Create users table with foreign key to roles
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY, 
     first_name VARCHAR(20), 
@@ -15,13 +13,11 @@ CREATE TABLE users (
     FOREIGN KEY (role_id) REFERENCES roles(role_id)
 );
 
--- Create countries table
 CREATE TABLE countries (
     country_id SERIAL PRIMARY KEY, 
     country_name VARCHAR(20) UNIQUE NOT NULL
 );
 
--- Create vacations table with foreign key to countries
 CREATE TABLE vacations (
     vacation_id SERIAL PRIMARY KEY, 
     country_id INT NOT NULL,
@@ -33,7 +29,6 @@ CREATE TABLE vacations (
     FOREIGN KEY (country_id) REFERENCES countries(country_id)
 );
 
--- Create likes table with a primary key
 CREATE TABLE likes (
     like_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
@@ -42,23 +37,19 @@ CREATE TABLE likes (
     FOREIGN KEY (vacation_id) REFERENCES vacations(vacation_id) ON DELETE CASCADE
 );
 
--- Insert roles
 INSERT INTO roles (role_name) VALUES 
     ('user'), 
     ('admin');
 
--- Insert users
 INSERT INTO users (first_name, last_name, email, password, role_id) VALUES 
     ('Shir', 'Frangi', 'shir@gmail.com', '1234', 2), 
     ('Test', 'Test', 'test@gmail.com', '1234', 1);
 
--- Insert countries
 INSERT INTO countries (country_name) VALUES 
     ('France'), ('Spain'), ('United States'), ('China'), ('Italy'), 
     ('Thailand'), ('Germany'), ('United Kingdom'), ('Japan'), ('Austria'), 
     ('Greece'), ('Australia'), ('Portugal'), ('Netherlands');
 
--- Insert vacations (fixed missing commas)
 INSERT INTO vacations (country_id, vacation_info, vacation_start_date, vacation_end_date, price, photo_file_path) VALUES 
     (1, 'A magical experience that offers a blend of rich culture, historical landmarks, exquisite food, and streets filled with romantic charm.', '2025-10-03', '2025-10-11', 3452, NULL),
     (2, 'A vacation in Madrid offers the perfect blend of culture, vibrant nightlife, excellent food, and a warm and inviting urban atmosphere.', '2025-10-25', '2025-10-30', 2530, NULL),
