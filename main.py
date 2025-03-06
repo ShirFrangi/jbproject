@@ -3,15 +3,15 @@
 # if __name__ == "__main__":
 #     test_all()
     
-from src.dal.database import initialize_database, db_conn
+# from src.dal.database import initialize_database
 
-initialize_database()
+# initialize_database()
     
     
+from src.dal.country_dao import CountryDAO
  
-    
-    
-    
+CountryDAO().get_all_countries()
+# print(x)
 # UserDAO().add_user('ilay', 'rachkovsky', 'ilay@gmail.com', '1234')
 # UserDAO().get_all_users()
 # UserDAO().get_user_by_id(user_id=1)

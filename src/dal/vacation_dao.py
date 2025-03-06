@@ -4,6 +4,7 @@ from datetime import date
 
 # internal packages
 from src.dal.database import db_conn
+from src.models.vacation import Vacation
 
 # external packages 
 from psycopg.sql import SQL, Identifier, Placeholder
@@ -15,28 +16,27 @@ class VacationDAO:
         self.table_name = "vacations"
 
 
-    def get_all_vacations(self) -> List[dict]:
+    def get_all_vacations(self) -> List[Vacation]:
         """
         Retrieves all vacations from the 'vacations' table.
-        Returns: List[dict]: A list of dictionaries representing the vacations in the table. Each dictionary contains column-value pairs for a vacation.
+        Returns: List[Vacation]: A list of Vacation objects.
         """
         with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
             query = SQL("SELECT * FROM {} order by {};").format(Identifier(self.table_name), Identifier("vacation_start_date"))
             cur.execute(query)
             result = cur.fetchall()
             
-        return result
+        return [Vacation(vacation_id=row['vacation_id'], country_id=row['country_id'], vacation_info=row['vacation_info'],
+                         vacation_start_date=row['vacation_start_date'], vacation_end_date=row['vacation_end_date'], price=row['price'],
+                         photo_file_path=row['photo_file_path']) for row in result]
 
 
-    def add_vacation(self, country_id: int, vacation_info: str, vacation_start_date: tuple, vacation_end_date: tuple, price: int, photo_file_path: str) -> dict:
+    def add_vacation(self, country_id: int, vacation_info: str, vacation_start_date: date, vacation_end_date: date, price: int, photo_file_path: str) -> Vacation:
         """
         Add a new vacation to the 'vacations' table with the provided details.
-        Args: country_id (int), vacation_info (str), vacation_start_date (tuple), vacation_end_date (tuple), price (str), photo_file_path (str).
-        Returns: dict: A dictionary representing the inserted vacation, including all columns and their values.
+        Args: country_id (int), vacation_info (str), vacation_start_date (date), vacation_end_date (date), price (int), photo_file_path (str).
+        Returns: Vacation: The inserted vacation as a Vacation object.
         """
-        vacation_start_date = date(vacation_start_date)
-        vacation_end_date = date(vacation_end_date)
-        
         with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
             query = SQL("INSERT INTO {} ({}) VALUES ({}) RETURNING *").format(
                 Identifier(self.table_name),  
@@ -46,21 +46,30 @@ class VacationDAO:
             db_conn.commit()
             result = cur.fetchone()
             
-        return result
+        return Vacation(vacation_id=result['vacation_id'], country_id=result['country_id'], vacation_info=result['vacation_info'],
+                        vacation_start_date=result['vacation_start_date'], vacation_end_date=result['vacation_end_date'], 
+                        price=result['price'], photo_file_path=result['photo_file_path'])
         
                 
-    def get_vacation_by_id(self, vacation_id: int) -> dict | None:
+    def get_vacation_by_id(self, vacation_id: int) -> Vacation | None:
         """
         Retrieves a vacation from the 'vacations' table by vacation_id.
         Args: vacation_id (int)
-        Returns: dict: A dictionary representing the vacation with the specified vacation_id, or None if no vacation is found.
+        Returns: Vacation: The vacation object with the specified vacation_id, or None if not found.
         """
         with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
             query = SQL("SELECT * FROM {} WHERE {} = {}").format(Identifier(self.table_name), Identifier("vacation_id"), Placeholder())
             cur.execute(query, (vacation_id,))
             result = cur.fetchall()
             
-        return result
+        if result:
+            row = result[0]  
+            return Vacation(vacation_id=row['vacation_id'], country_id=row['country_id'], vacation_info=row['vacation_info'],
+                            vacation_start_date=row['vacation_start_date'], vacation_end_date=row['vacation_end_date'],
+                            price=row['price'], photo_file_path=row['photo_file_path'])
+        
+        else:
+            return None
    
         
     def update_vacation_value_by_id(self, vacation_id: int, column_to_update: str, new_value: str) -> str:

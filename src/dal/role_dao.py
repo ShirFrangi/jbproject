@@ -3,6 +3,7 @@ from typing import List
 
 # internal packages
 from src.dal.database import db_conn
+from src.models.role import Role
 
 # external packages 
 from psycopg.sql import SQL, Identifier, Placeholder
@@ -14,45 +15,45 @@ class RoleDAO:
         self.table_name = "roles"
 
 
-    def get_all_roles(self) -> List[dict]:
+    def get_all_roles(self) -> List[Role]:
         """
         Retrieves all roles from the 'roles' table.
-        Returns: List[dict]: A list of dictionaries representing the roles in the table. Each dictionary contains column-value pairs for a role.
+        Returns: List[Role]: A list of Role enum objects.
         """
         with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
             query = SQL("SELECT * FROM {};").format(Identifier(self.table_name))
             cur.execute(query)
             result = cur.fetchall()
             
-        return result
+        return [Role(row['role_name']) for row in result]
 
 
-    def add_role(self, role_name: str) -> dict:
+    def add_role(self, role_name: str) -> Role:
         """
         Add a new role to the 'roles' table with the provided details.
         Args: role_name (str).
-        Returns: dict: A dictionary representing the inserted role, including all columns and their values.
+        Returns: Role: A Role enum object representing the inserted role.
         """
         with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
             query = SQL("INSERT INTO {} ({}) VALUES ({}) RETURNING *").format(Identifier(self.table_name), Identifier("role_name"), Placeholder())
             cur.execute(query, (role_name,))
             result = cur.fetchall()
             
-        return result
+        return Role(result[0]['role_name'])
         
         
-    def get_role_by_id(self, role_id: int) -> dict | None:
+    def get_role_by_id(self, role_id: int) -> Role | None:
         """
         Retrieves a role from the 'roles' table by role_id.
         Args: role_id (int).
-        Returns: dict: A dictionary representing the role with the specified role_id, or None if no role is found.
+        Returns: Role: A Role enum object, or None if no role is found.
         """
         with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
             query = SQL("SELECT * FROM {} WHERE {} = {}").format(Identifier(self.table_name), Identifier("role_id"), Placeholder())
             cur.execute(query, (role_id,))
             result = cur.fetchall()
             
-        return result
+        return Role(result[0]['role_name']) if result else None
         
         
     def update_role_value_by_id(self, role_id: int, column_to_update: str, new_value: str) -> str:

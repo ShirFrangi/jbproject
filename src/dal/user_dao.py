@@ -15,48 +15,55 @@ class UserDAO:
         self.table_name = "users"
 
 
-    def get_all_users(self) -> List[dict]:
+    def get_all_users(self) -> List[User]:
         """
         Retrieves all users from the 'users' table.
-        Returns: List[dict]: A list of dictionaries representing the users in the table. Each dictionary contains column-value pairs for a user.
+        Returns: List[User]: A list of User objects.
         """
         with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
             query = SQL("SELECT * FROM {};").format(Identifier(self.table_name))
             cur.execute(query)
             result = cur.fetchall()
             
-        return result
+        return [User(user_id=row['user_id'], first_name=row['first_name'], last_name=row['last_name'],
+                     email=row['email'], password=row['password'], role_id=row['role_id']) for row in result]
 
 
-    def add_user(self, user: User) -> dict:
+    def add_user(self, first_name: str, last_name: str, email: str, password: str) -> User:
         """
         Add a new user to the 'users' table with the provided details.
-        Returns: dict: A dictionary representing the inserted user, including all columns and their values.
+        Returns: User: A User object representing the inserted user, including all columns and their values.
         """
+        role_id = 1
         with self.db_conn.cursor(row_factory=pgrows.dict_row) as cur:
             query = SQL("INSERT INTO {} ({}) VALUES ({}) RETURNING *").format(
                 Identifier(self.table_name),  
                 SQL(", ").join(map(Identifier, ["first_name", "last_name", "email", "password", "role_id"])),
                 SQL(", ").join(Placeholder() for _ in range(5)))
-            cur.execute(query, (user.first_name, user.last_name, user.email, user.password, user.role_id)) 
+            cur.execute(query, (first_name, last_name, email, password, role_id)) 
             db_conn.commit()
             result = cur.fetchone()
             
-        return result
+        return User(user_id=result['user_id'], first_name=result['first_name'], last_name=result['last_name'],
+                    email=result['email'], password=result['password'], role_id=result['role_id'])
         
         
-    def get_user_by_id(self, user_id: int) -> dict | None:
+    def get_user_by_id(self, user_id: int) -> User | None:
         """
         Retrieves a user from the 'users' table by user_id.
         Args: user_id (int).
-        Returns: dict: A dictionary representing the user with the specified user_id, or None if no user is found.
+        Returns: User: A User object representing the user with the specified user_id, or None if no user is found.
         """
         with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
             query = SQL("SELECT * FROM {} WHERE {} = {}").format(Identifier(self.table_name), Identifier("user_id"), Placeholder())
             cur.execute(query, (user_id,))
             result = cur.fetchall()
             
-        return result
+        if result:
+            return User(user_id=result[0]['user_id'], first_name=result[0]['first_name'], last_name=result[0]['last_name'],
+                        email=result[0]['email'], password=result[0]['password'], role_id=result[0]['role_id'])
+        else:
+            return None
         
         
     def update_user_value_by_id(self, user_id: int, column_to_update: str, new_value: str) -> str:
@@ -88,11 +95,11 @@ class UserDAO:
             return f"Deleted user with user_id {user_id}." if cur.rowcount == 1 else f"Deletion user with user_id {user_id} failed."
         
     
-    def get_user_by_email_and_password(self, email: str, password: str) -> dict | None:
+    def get_user_by_email_and_password(self, email: str, password: str) -> User | None:
         """
         Retrieves a user from the 'users' table by email and password.
         Args: email (str), password (str).
-        Returns: dict: A dictionary representing the user with the specified email and password, or None if no user is found.
+        Returns: User: A User object representing the user with the specified email and password, or None if no user is found.
         """
         with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
             query = SQL("SELECT * FROM {} WHERE {} = {} AND {} = {}").format(
@@ -100,7 +107,11 @@ class UserDAO:
             cur.execute(query, (email, password))
             result = cur.fetchone()
             
-        return result
+        if result:
+            return User(user_id=result['user_id'], first_name=result['first_name'], last_name=result['last_name'],
+                        email=result['email'], password=result['password'], role_id=result['role_id'])
+        else:
+            return None
     
     
     def email_exists(self, email: str) -> bool:
