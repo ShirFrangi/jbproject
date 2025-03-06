@@ -1,11 +1,13 @@
+# built-in packages
 import re
+
+# internal packages
 from src.services import errors
 from src.dal.user_dao import UserDAO
 from src.dal.like_dao import LikeDAO
 from models.user import User
 
 class UserService:
-    
     def register(self, first_name, last_name, email, password):
         """
         Registers a new user by validating the input fields and saving the user to the DB.

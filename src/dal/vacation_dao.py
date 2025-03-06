@@ -67,7 +67,6 @@ class VacationDAO:
             return Vacation(vacation_id=row['vacation_id'], country_id=row['country_id'], vacation_info=row['vacation_info'],
                             vacation_start_date=row['vacation_start_date'], vacation_end_date=row['vacation_end_date'],
                             price=row['price'], photo_file_path=row['photo_file_path'])
-        
         else:
             return None
    
