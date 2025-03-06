@@ -49,7 +49,7 @@ class LikeDAO:
     def get_like_by_id(self, like_id: int) -> Like | None:
         """
         Retrieves a like from the 'likes' table by like_id.
-        Args: like_id (int)
+        Args: like_id (int).
         Returns: Like: The like as a Like object, or None if not found.
         """
         with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
@@ -59,6 +59,21 @@ class LikeDAO:
             
         return Like(like_id=result["like_id"], user_id=result["user_id"], vacation_id=result["vacation_id"]) if result else None
         
+        
+    def get_like_by_user_and_vacation(self, user_id: int, vacation_id: int) -> Like | None:
+        """
+        Retrieves a like from the 'likes' table by user_id and vacation_id.
+        Args: user_id (int), vacation_id (int).
+        Returns: Like: The like as a Like object, or None if not found.
+        """
+        with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
+            query = SQL("SELECT * FROM {} WHERE {} = {} AND {} = {}").format(Identifier(self.table_name), Identifier("user_id"), Placeholder(),
+                                                                             Identifier("vacation_id"), Placeholder())
+            cur.execute(query, (user_id, vacation_id))
+            result = cur.fetchone()
+            
+        return Like(like_id=result["like_id"], user_id=result["user_id"], vacation_id=result["vacation_id"]) if result else None
+    
         
     def update_like_value_by_id(self, like_id: int, column_to_update: str, new_value: str) -> str:
         """
