@@ -2,8 +2,8 @@
 from typing import List
 
 # internal packages
-from src.dal.database import db_conn
-from src.models.user import User
+from src.dal.database import prod_db_conn, test_db_conn
+from src.models.user_dto import User
 
 # external packages 
 from psycopg.sql import SQL, Identifier, Placeholder
@@ -11,8 +11,9 @@ import psycopg.rows as pgrows
 
 
 class UserDAO:
-    def __init__(self):
+    def __init__(self, env='prod'):
         self.table_name = "users"
+        self.db_conn = prod_db_conn if env == 'prod' else test_db_conn
 
 
     def get_all_users(self) -> List[User]:
@@ -20,7 +21,7 @@ class UserDAO:
         Retrieves all users from the 'users' table.
         Returns: List[User]: A list of User objects.
         """
-        with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
+        with self.db_conn.cursor(row_factory=pgrows.dict_row) as cur:
             query = SQL("SELECT * FROM {};").format(Identifier(self.table_name))
             cur.execute(query)
             result = cur.fetchall()
@@ -36,17 +37,15 @@ class UserDAO:
         """
         role_id = 1
         with self.db_conn.cursor(row_factory=pgrows.dict_row) as cur:
-            query = SQL("INSERT INTO {} ({}) VALUES ({}) RETURNING *").format(
-                Identifier(self.table_name),  
-                SQL(", ").join(map(Identifier, ["first_name", "last_name", "email", "password", "role_id"])),
-                SQL(", ").join(Placeholder() for _ in range(5)))
-            cur.execute(query, (first_name, last_name, email, password, role_id)) 
-            db_conn.commit()
+            query = SQL("INSERT INTO {} (first_name, last_name, email, password, role_id) VALUES (%s, %s, %s, %s, %s) RETURNING *").format(
+                Identifier(self.table_name))
+            cur.execute(query, (first_name, last_name, email, password, role_id))
+            self.db_conn.commit()
             result = cur.fetchone()
-            
+        
         return User(user_id=result['user_id'], first_name=result['first_name'], last_name=result['last_name'],
                     email=result['email'], password=result['password'], role_id=result['role_id'])
-        
+
         
     def get_user_by_id(self, user_id: int) -> User | None:
         """
@@ -54,45 +53,47 @@ class UserDAO:
         Args: user_id (int).
         Returns: User: A User object representing the user with the specified user_id, or None if no user is found.
         """
-        with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
+        with self.db_conn.cursor(row_factory=pgrows.dict_row) as cur:
             query = SQL("SELECT * FROM {} WHERE {} = {}").format(Identifier(self.table_name), Identifier("user_id"), Placeholder())
             cur.execute(query, (user_id,))
-            result = cur.fetchall()
+            result = cur.fetchone()
             
-        if result:
-            return User(user_id=result[0]['user_id'], first_name=result[0]['first_name'], last_name=result[0]['last_name'],
-                        email=result[0]['email'], password=result[0]['password'], role_id=result[0]['role_id'])
-        else:
-            return None
+        
+        return User(user_id=result['user_id'], first_name=result['first_name'], last_name=result['last_name'],
+                    email=result['email'], password=result['password'], role_id=result['role_id']) if result else None
         
         
-    def update_user_value_by_id(self, user_id: int, column_to_update: str, new_value: str) -> str:
+    def update_user_value_by_id(self, user_id: int, column_to_update: str, new_value: str) -> User | None:
         """
         Updates the value of a specific column for a user in the 'users' table.
         Args: user_id (int), column_to_update (str), new_value (str).
-        Returns: str: A message indicating whether the update was successful.
+        Returns: User: A User object representing the user, or None if not found.
         """
-        with db_conn.cursor() as cur:
-            query = SQL("UPDATE {} SET {} = {} WHERE {} = {}").format(
+        with self.db_conn.cursor() as cur:
+            query = SQL("UPDATE {} SET {} = {} WHERE {} = {} RETURNING *").format(
                 Identifier(self.table_name), Identifier(column_to_update), Placeholder(), Identifier("user_id"),Placeholder())
             cur.execute(query, (new_value, user_id))
-            db_conn.commit()
+            self.db_conn.commit()
+            result = cur.fetchone()
             
-            return f"Updated user with user_id {user_id}." if cur.rowcount == 1 else f"Update user with user_id {user_id} failed."
+        return User(user_id=result['user_id'], first_name=result['first_name'], last_name=result['last_name'],
+                email=result['email'], password=result['password'], role_id=result['role_id']) if result else None
         
         
-    def delete_user_by_id(self, user_id: int) -> str:
+    def delete_user_by_id(self, user_id: int) -> User | None:
         """
         Deletes a user from the 'users' table by user_id.
         Args: user_id (int).
-        Returns: str: A message indicating whether the deletion was successful.
+        Returns: User: A User object representing the user, or None if not found.
         """
-        with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
-            query = SQL("DELETE FROM {} WHERE {} = {}").format(Identifier(self.table_name), Identifier("user_id"), Placeholder())
+        with self.db_conn.cursor(row_factory=pgrows.dict_row) as cur:
+            query = SQL("DELETE FROM {} WHERE {} = {} RETURNING *").format(Identifier(self.table_name), Identifier("user_id"), Placeholder())
             cur.execute(query, (user_id,))
-            db_conn.commit()
+            self.db_conn.commit()
+            result = cur.fetchone()
 
-            return f"Deleted user with user_id {user_id}." if cur.rowcount == 1 else f"Deletion user with user_id {user_id} failed."
+        return User(user_id=result['user_id'], first_name=result['first_name'], last_name=result['last_name'],
+               email=result['email'], password=result['password'], role_id=result['role_id']) if result else None
         
     
     def get_user_by_email_and_password(self, email: str, password: str) -> User | None:
@@ -101,17 +102,15 @@ class UserDAO:
         Args: email (str), password (str).
         Returns: User: A User object representing the user with the specified email and password, or None if no user is found.
         """
-        with db_conn.cursor(row_factory=pgrows.dict_row) as cur:
+        with self.db_conn.cursor(row_factory=pgrows.dict_row) as cur:
             query = SQL("SELECT * FROM {} WHERE {} = {} AND {} = {}").format(
                 Identifier(self.table_name), Identifier("email"), Placeholder(), Identifier("password"), Placeholder())
             cur.execute(query, (email, password))
             result = cur.fetchone()
             
-        if result:
-            return User(user_id=result['user_id'], first_name=result['first_name'], last_name=result['last_name'],
-                        email=result['email'], password=result['password'], role_id=result['role_id'])
-        else:
-            return None
+        
+        return User(user_id=result['user_id'], first_name=result['first_name'], last_name=result['last_name'],
+                    email=result['email'], password=result['password'], role_id=result['role_id']) if result else None
     
     
     def email_exists(self, email: str) -> bool:
@@ -120,7 +119,7 @@ class UserDAO:
         Args: email (str).
         Returns: bool: True if the email exists, False otherwise.
         """
-        with db_conn.cursor() as cur:
+        with self.db_conn.cursor() as cur:
             query = SQL("SELECT EXISTS (SELECT 1 FROM {} WHERE {} = {})").format(
                 Identifier(self.table_name), Identifier("email"), Placeholder()
             )

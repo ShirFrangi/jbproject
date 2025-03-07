@@ -6,11 +6,15 @@ from src.services import errors
 from src.dal.user_dao import UserDAO
 from src.dal.like_dao import LikeDAO
 from src.dal.vacation_dao import VacationDAO
-from src.models.user import User
-from src.models.like import Like
+from src.models.user_dto import User
+from src.models.like_dto import Like
 
 
 class UserService:
+    def __init__(self, env='prod'):
+        self.env = env
+        
+    
     def register(self, first_name: str, last_name: str, email: str, password: str) -> User:
         """
         Registers a new user by validating the input fields and saving the user to the DB.
@@ -30,16 +34,11 @@ class UserService:
         if len(password) < 4:
             raise errors.InvalidInputError("Password must be at least 4 characters long")
 
-        if UserDAO().email_exists(email):
+        if UserDAO(env=self.env).email_exists(email):
             raise errors.InvalidInputError("Email already exists")
         
-        try:
-            user_registered = UserDAO().add_user(first_name, last_name, email, password)
-            print(f"User with email {email} registered successfully")
-            return user_registered
-        
-        except Exception as e:
-            print(f"An unexpected error occurred while registering the user: {e}")
+        user_registered = UserDAO(env=self.env).add_user(first_name, last_name, email, password)
+        return user_registered
         
     
     def login(self, email: str, password: str) -> User:
@@ -61,21 +60,16 @@ class UserService:
         if len(password) < 4:
             raise errors.InvalidInputError("Password must be at least 4 characters long")
         
-        if not UserDAO().email_exists(email):
+        if not UserDAO(env=self.env).email_exists(email):
             raise errors.InvalidInputError("User not found")
         
-        try:
-            user_logged_in = UserDAO().get_user_by_email_and_password(email, password)
+        user_logged_in = UserDAO(env=self.env).get_user_by_email_and_password(email, password)
         
-            if  user_logged_in == None:
-                raise errors.InvalidInputError("Incorrect email or password")
+        if user_logged_in == None:
+            raise errors.InvalidInputError("Incorrect email or password")
             
-            else:
-                print(f"User {email} logged in successfully")
-                return user_logged_in
-        
-        except Exception as e:
-            print(f"An unexpected error occurred while logging the user: {e}")
+        else:
+            return user_logged_in
     
     
     def add_like(self, user_id: int, vacation_id: int) -> Like:
@@ -88,22 +82,17 @@ class UserService:
         if not user_id or not vacation_id:
             raise errors.MissingInputError("user_id and vacation_id are required")
         
-        if UserDAO().get_user_by_id(user_id=user_id) == None:
+        if UserDAO(env=self.env).get_user_by_id(user_id=user_id) == None:
             raise errors.InvalidInputError("User id not found")
         
-        if VacationDAO().get_vacation_by_id(vacation_id=vacation_id) == None:
+        if VacationDAO(env=self.env).get_vacation_by_id(vacation_id=vacation_id) == None:
             raise errors.InvalidInputError("Vacation id not found")
-            
-        try:
-            like = LikeDAO().add_like(user_id=user_id, vacation_id=vacation_id)
-            print(f"User {user_id} liked vacation {vacation_id}")
-            return like
         
-        except Exception as e:
-            print(f"An unexpected error occurred while adding a like: {e}")
+        like = LikeDAO(env=self.env).add_like(user_id=user_id, vacation_id=vacation_id)
+        return like
 
 
-    def remove_like(self, user_id: int, vacation_id: int) -> str:
+    def remove_like(self, user_id: int, vacation_id: int) -> Like:
         """
         Remove a like for a vacation.
         """
@@ -113,16 +102,11 @@ class UserService:
         if not user_id or not vacation_id:
             raise errors.MissingInputError("user_id and vacation_id are required")
         
-        if LikeDAO().get_like_by_user_and_vacation(user_id=user_id, vacation_id=vacation_id) == None:
+        if LikeDAO(env=self.env).get_like_by_user_and_vacation(user_id=user_id, vacation_id=vacation_id) == None:
             raise errors.InvalidInputError("Like not found")
         
-        try:
-            like_removed = LikeDAO().delete_like(user_id=user_id, vacation_id=vacation_id)
-            return like_removed
-        
-        except Exception as e:
-            print(f"An unexpected error occurred while remove a like: {e}")
-            
+        like_removed = LikeDAO(env=self.env).delete_like(user_id=user_id, vacation_id=vacation_id)
+        return like_removed            
     
 # 
     
