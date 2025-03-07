@@ -11,8 +11,8 @@ from src.models.like_dto import Like
 
 class TestUserService(unittest.TestCase):
     def setUp(self):
-        self.user_service = UserService(env='prod')
-        initialize_database(env='prod')  
+        self.user_service = UserService(env='dev')
+        initialize_database(env='dev')  
         
 
     # ---Tests for register function---
@@ -146,7 +146,7 @@ class TestUserService(unittest.TestCase):
         """
         like = self.user_service.add_like(1, 1)
         self.assertIsNotNone(like) 
-        with self.assertRaises(errors.InvalidInputError):
+        with self.assertRaises(errors.InvalidTypeInputError):
             self.user_service.remove_like("1", 1)
      
             
@@ -156,7 +156,7 @@ class TestUserService(unittest.TestCase):
         """
         like = self.user_service.add_like(1, 1)
         self.assertIsNotNone(like)
-        with self.assertRaises(errors.InvalidInputError):
+        with self.assertRaises(errors.InvalidTypeInputError):
             self.user_service.remove_like(1, "1")   
       
 # 

@@ -8,9 +8,12 @@ from src.config import db_conn_info, test_db_conn_info
 import psycopg as pg
 import psycopg.rows as pgrows
 
+try:
+    prod_db_conn = pg.connect(db_conn_info)
+    test_db_conn = pg.connect(test_db_conn_info)
 
-prod_db_conn = pg.connect(db_conn_info)
-test_db_conn = pg.connect(test_db_conn_info)
+except Exception as e:
+    print(f"Error connecting to DB: {e}")
 
 
 def initialize_database(env='dev') -> str:
