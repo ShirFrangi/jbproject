@@ -7,7 +7,7 @@ from tests.test_vacation_service import TestVacationService
 
 
 def test_all():
-    test_cases = [TestUserService]
+    test_cases = [TestUserService, TestVacationService]
     suite = unittest.TestSuite()
     loader = unittest.TestLoader()
     

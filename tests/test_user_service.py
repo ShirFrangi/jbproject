@@ -85,7 +85,7 @@ class TestUserService(unittest.TestCase):
             self.user_service.login('shir@gmail.com', '123')
             
             
-    def test_login_user_not_exist(self):
+    def test_login_invalid_user(self):
         """
         Negative test: user does not exist.
         """

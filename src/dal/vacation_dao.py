@@ -74,7 +74,7 @@ class VacationDAO:
         Args: vacation_id (int), column_to_update (str), new_value (str).
         Returns: Vacation: A Vacation object representing the vacation, or None if not found.
         """
-        with self.db_conn.cursor() as cur:
+        with self.db_conn.cursor(row_factory=pgrows.dict_row) as cur:
             query = SQL("UPDATE {} SET {} = {} WHERE {} = {} RETURNING *").format(
                 Identifier(self.table_name), Identifier(column_to_update), Placeholder(), Identifier("vacation_id"),Placeholder())
             cur.execute(query, (new_value, vacation_id))
@@ -101,5 +101,16 @@ class VacationDAO:
         return Vacation(vacation_id=result['vacation_id'], country_id=result['country_id'], vacation_info=result['vacation_info'],
                         vacation_start_date=result['vacation_start_date'], vacation_end_date=result['vacation_end_date'],
                         price=result['price'], photo_file_path=result['photo_file_path']) if result else None
+        
+        
+    def delete_all_vacations(self) -> None:
+        """
+        Deletes all vacations from the 'vacations' table.
+        Returns: List of Vacations: Vacation objects representing the vacation.
+        """
+        with self.db_conn.cursor(row_factory=pgrows.dict_row) as cur:
+            query = SQL("DELETE FROM {};").format(Identifier(self.table_name))
+            cur.execute(query)
+            self.db_conn.commit()
 
 # 
