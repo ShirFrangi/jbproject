@@ -1,5 +1,9 @@
-db_conn_info = "postgresql://postgres:postgres@localhost:5432/jbproject"
+# ---Database connection details - PROD environment---
+db_name = 'jbproject'
+db_conn_info = f"postgresql://postgres:postgres@localhost:5432/{db_name}"
 
-test_db_conn_info = "postgresql://postgres:postgres@localhost:5432/test_db"
+# ---Database connection details - DEV environment---
+test_db_name = 'test_db'
+test_db_conn_info = f"postgresql://postgres:postgres@localhost:5432/{test_db_name}"
 
 #
