@@ -2,7 +2,7 @@
 from typing import List
 
 # internal packages
-from src.dal.database import prod_db_conn, test_db_conn
+from src.dal.database import prod_db_conn, dev_db_conn
 from src.models.role_dto import Role
 
 # external packages 
@@ -13,7 +13,7 @@ import psycopg.rows as pgrows
 class RoleDAO:
     def __init__(self, env='prod'):
         self.table_name = "roles"
-        self.db_conn = prod_db_conn if env == 'prod' else test_db_conn
+        self.db_conn = prod_db_conn if env == 'prod' else dev_db_conn
 
 
     def get_all_roles(self) -> List[Role]:

@@ -3,7 +3,7 @@ from typing import List
 from datetime import date
 
 # internal packages
-from src.dal.database import test_db_conn, prod_db_conn
+from src.dal.database import dev_db_conn, prod_db_conn
 from src.models.vacation_dto import Vacation
 
 # external packages 
@@ -14,7 +14,7 @@ import psycopg.rows as pgrows
 class VacationDAO:
     def __init__(self, env='prod'):
         self.table_name = "vacations"
-        self.db_conn = prod_db_conn if env == 'prod' else test_db_conn
+        self.db_conn = prod_db_conn if env == 'prod' else dev_db_conn
 
 
     def get_all_vacations(self) -> List[Vacation]:

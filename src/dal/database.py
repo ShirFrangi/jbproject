@@ -2,15 +2,15 @@
 import os
 
 # internal packages
-from src.config import db_conn_info, test_db_conn_info
+from src.config import prod_db_conn_info, dev_db_conn_info
 
 # external packages
 import psycopg as pg
 from psycopg.rows import dict_row
 
 try:
-    prod_db_conn = pg.connect(db_conn_info)
-    test_db_conn = pg.connect(test_db_conn_info)
+    prod_db_conn = pg.connect(prod_db_conn_info)
+    dev_db_conn = pg.connect(dev_db_conn_info)
 
 except Exception as e:
     print(f"Error connecting to DB: {e}")
@@ -21,7 +21,7 @@ def initialize_database(env='dev') -> str:
     Initializes the database by dropping existing tables and recreating them 
     using SQL commands from the 'init_db.sql' file.
     """
-    data_base = test_db_conn if env == 'dev' else prod_db_conn
+    data_base = dev_db_conn if env == 'dev' else prod_db_conn
     current_dir = os.path.dirname(os.path.abspath(__file__))
     sql_file_path = current_dir.replace('dal', 'init_db.sql')
     try:
