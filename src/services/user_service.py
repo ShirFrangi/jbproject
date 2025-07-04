@@ -61,15 +61,11 @@ class UserService:
             raise errors.InvalidInputError("Password must be at least 4 characters long")
         
         if not UserDAO(env=self.env).email_exists(email):
-            raise errors.InvalidInputError("User not found")
+            return None
         
         user_logged_in = UserDAO(env=self.env).get_user_by_email_and_password(email, password)
-        
-        if user_logged_in == None:
-            raise errors.InvalidInputError("Incorrect email or password")
             
-        else:
-            return user_logged_in
+        return user_logged_in
     
     
     def add_like(self, user_id: int, vacation_id: int) -> Like:

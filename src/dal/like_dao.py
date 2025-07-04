@@ -27,6 +27,17 @@ class LikeDAO:
             result = cur.fetchall()
             
         return [Like(like_id=row["like_id"], user_id=row["user_id"], vacation_id=row["vacation_id"]) for row in result]
+    
+    
+    def get_liked_vacation_ids_by_user(self, user_id: int) -> List[int]:
+        """
+        Retrieves a list of vacation_ids that the given user has liked.
+        """
+        with self.db_conn.cursor() as cur:
+            query = SQL("SELECT vacation_id FROM {} WHERE user_id = %s;").format(Identifier(self.table_name))
+            cur.execute(query, (user_id,))
+            rows = cur.fetchall()
+        return [row[0] for row in rows]
 
 
     def add_like(self, user_id: int, vacation_id: int) -> Like:

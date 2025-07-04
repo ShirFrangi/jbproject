@@ -23,13 +23,22 @@ class VacationDAO:
         Returns: List[Vacation]: A list of Vacation objects.
         """
         with self.db_conn.cursor(row_factory=pgrows.dict_row) as cur:
-            query = SQL("SELECT * FROM {} order by {};").format(Identifier(self.table_name), Identifier("vacation_start_date"))
+            query = SQL("""SELECT *, (SELECT COUNT(*) FROM {} AS l WHERE l.{} = v.{}) AS likes_count
+                            FROM {} AS v JOIN {} AS c ON v.{} = c.{} ORDER BY {};"""
+                            ).format(Identifier("likes"),
+                                     Identifier("vacation_id"),
+                                     Identifier("vacation_id"),
+                                     Identifier(self.table_name),
+                                     Identifier("countries"),
+                                     Identifier("country_id"),
+                                     Identifier("country_id"),
+                                     Identifier("vacation_start_date"))
             cur.execute(query)
             result = cur.fetchall()
             
-        return [Vacation(vacation_id=row['vacation_id'], country_id=row['country_id'], vacation_info=row['vacation_info'],
+        return [Vacation(vacation_id=row['vacation_id'], country_id=row['country_id'], country_name=row['country_name'], vacation_info=row['vacation_info'],
                          vacation_start_date=row['vacation_start_date'], vacation_end_date=row['vacation_end_date'], price=row['price'],
-                         photo_file_path=row['photo_file_path']) for row in result]
+                         photo_file_path=row['photo_file_path'], likes_count=row['likes_count']) for row in result]
 
 
     def add_vacation(self, country_id: int, vacation_info: str, vacation_start_date: date, vacation_end_date: date, price: int, photo_file_path: str) -> Vacation:
@@ -59,13 +68,17 @@ class VacationDAO:
         Returns: Vacation: The vacation object with the specified vacation_id, or None if not found.
         """
         with self.db_conn.cursor(row_factory=pgrows.dict_row) as cur:
-            query = SQL("SELECT * FROM {} WHERE {} = {}").format(Identifier(self.table_name), Identifier("vacation_id"), Placeholder())
+            query = SQL("""SELECT * 
+                        FROM {} as v
+                        JOIN {} as c
+                        ON  v.country_id = c.country_id
+                        WHERE {} = {}""").format(Identifier(self.table_name), Identifier("countries"), Identifier("vacation_id"), Placeholder())
             cur.execute(query, (vacation_id,))
             result = cur.fetchone()
              
-        return Vacation(vacation_id=result['vacation_id'], country_id=result['country_id'], vacation_info=result['vacation_info'],
-                        vacation_start_date=result['vacation_start_date'], vacation_end_date=result['vacation_end_date'],
-                        price=result['price'], photo_file_path=result['photo_file_path']) if result else None
+        return Vacation(vacation_id=result['vacation_id'], country_id=result['country_id'], country_name=result['country_name'],
+                        vacation_info=result['vacation_info'],vacation_start_date=result['vacation_start_date'],
+                        vacation_end_date=result['vacation_end_date'],price=result['price'], photo_file_path=result['photo_file_path']) if result else None
    
         
     def update_vacation_value_by_id(self, vacation_id: int, column_to_update: str, new_value: str) -> Vacation | None:
@@ -82,8 +95,8 @@ class VacationDAO:
             result = cur.fetchone()
             
         return Vacation(vacation_id=result['vacation_id'], country_id=result['country_id'], vacation_info=result['vacation_info'],
-                        vacation_start_date=result['vacation_start_date'], vacation_end_date=result['vacation_end_date'],
-                        price=result['price'], photo_file_path=result['photo_file_path']) if result else None
+                        vacation_start_date=result['vacation_start_date'],vacation_end_date=result['vacation_end_date'],price=result['price'],
+                        photo_file_path=result['photo_file_path']) if result else None
         
         
     def delete_vacation_by_id(self, vacation_id: int) -> Vacation | None:
