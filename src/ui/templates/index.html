@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+
+{% block mainContent %}
+
+<section class="vacations-title container">
+    {% if is_admin %}
+        <h2>* מצב מנהל מערכת *</h2>
+    {% else %}
+        <h2>הצעות שוות בשבילך:</h2>
+    {% endif %}
+</section>
+<!-- כרטיסיות- חופשות -->
+<main class="vacations-container">
+    {% if is_admin %}
+        <div class="vacation-card add-new-card" onclick="window.location.href='{{ url_for('add_vacation') }}'">
+            <div class="plus-wrapper">
+                <i class="bi bi-plus-lg"></i>
+                <p>הוסף חופשה</p>
+            </div>
+        </div>        
+    {% endif %}
+    {% for vacation in vacations %}
+        <div class="vacation-card">
+
+            {% if is_admin %}
+                <div class="admin-controls">
+                    <i class="bi bi-pencil edit-icon" title="ערוך" onclick="event.stopPropagation(); window.location.href='{{ url_for('edit_vacation', vacation_id=vacation.vacation_id) }}'"></i>
+                    <i class="bi bi-trash delete-icon" title="מחק" onclick="showDeleteConfirmation({{ vacation.vacation_id }}, event)"></i>
+                </div>
+            {% else %}
+                <span class="like-icon" 
+                      onclick="handleLikeClick(event)" 
+                      data-vacation-id="{{ vacation.vacation_id }}">
+                    <span class="like-count" id="like-count-{{ vacation.vacation_id }}">
+                        {{ vacation.likes_count }} סימנו בלייק
+                    </span>
+                    <i class="bi bi-heart-fill" style="color: {% if vacation.vacation_id in liked_vacations %}red{% else %}white{% endif %};"></i>
+                </span>
+            {% endif %}
+
+            <img src="{{ url_for('static', filename='images/vacation_images/' ~ vacation.photo_file_path) }}" alt="{{ vacation.vacation_name }}" />
+            <div class="card-header">
+                <h3>{{ vacation.country_name }}</h3>
+                <span class="dates">{{ vacation.vacation_end_date.strftime("%d.%m") }}–{{ vacation.vacation_start_date.strftime("%d.%m") }}</span>
+            </div>
+            <p class="description">{{ vacation.vacation_info }}</p>
+            <div class="card-footer price-row">
+                <span class="price">{{ vacation.price }} ₪ <span class="per-person">לאדם</span> </span>
+                <button class="book-btn" onclick="event.stopPropagation(); alert('מצטערים, אזל המלאי לחופשה זו')">הזמן עכשיו</button>
+            </div>
+        </div>
+    {% endfor %}
+</main>
+
+<!-- פופ-אפ -->
+{% if is_admin %}
+    <div id="delete-confirmation" class="popup hidden">
+        <div class="popup__content relative">
+            <span class="popup__close" id="delete-close-btn" aria-label="סגור">&times;</span>
+            <h3>האם את/ה בטוח/ה שברצונך למחוק חופשה זו?</h3>
+            <div class="delete-confirmation-buttons">
+                <button id="confirm-delete-btn" class="book-btn">מחיקה</button>
+                <button id="cancel-delete-btn" class="book-btn cancel-btn">ביטול</button>
+            </div>
+        </div>
+    </div>       
+{% endif %}
+
+<div id="popup" class="popup hidden">
+    <div class="popup__content">
+        <span class="popup__close" onclick="closePopup()">&times;</span>
+        
+        <img id="popup-image" src="" alt="Vacation Image" class="popup__image">
+
+        <h2 id="popup-title" class="popup__title"></h2>
+        <p id="popup-description" class="popup__description"></p>
+        <p id="popup-dates" class="popup__dates"></p>
+        <p id="popup-price" class="popup__price"></p>
+
+        <hr class="popup__divider">
+
+        <div id="popup-extra" class="popup__extra">
+            <h3 class="popup__extra-title">פרטים נוספים:</h3>
+            <p class="popup__extra-text">
+                כלל החופשות כוללות טיסה המופעלת ע״י אלעל.
+                כל נוסע זכאי לכבודה - תיק גב עד 10 ק״ג + טרולי 8 עד ק״ג + מזוודה לבטן המטוס עד 20 ק״ג.
+                הוספת כבודה בתוספת תשלום תתבצע במהלך ביצוע הרכישה.
+                לאחר הזמנת החופשה אישור ישלח למייל של המשתמש הרשום בעת ביצוע ההזמנה.
+            </p>
+            
+            <p class="popup__extra-text"><strong>מדיניות ביטולים:</strong></p>
+            <ul class="popup__extra-text">
+                <li>ביטול עד 20 ימים לפני מועד ההגעה – החזר מלא.</li>
+                <li>ביטול פחות מ-20 ימים – חיוב חלקי או ללא החזר.</li>
+                <li>ביטול ביום ההגעה או אי הגעה – ללא החזר.</li>
+                <li>שינויים כפופים לזמינות ובתוספת תשלום לפי מדיניות החברה.</li>
+            </ul>   
+            <button class="book-btn" onclick="event.stopPropagation(); alert('מצטערים, אזל המלאי לחופשה זו')">הזמן עכשיו</button>           
+        </div>
+    </div>
+</div>     
+
+{% endblock %}

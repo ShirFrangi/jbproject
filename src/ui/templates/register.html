@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block mainContent %}
+
+    <div class="register-wrapper">
+        <div class="login-box">
+            <main class="login-container">
+                <h2 class="section-title">הרשמה</h2>
+                <form id="loginForm" class="login-form" method="POST" action="{{ url_for('register_page') }}">
+                    <label for="firstName">שם פרטי:</label>
+                    <input type="text" id="firstName" name="firstName" required />
+                    <div class="error-message" id="firstNameError"></div>
+
+                    <label for="lastName">שם משפחה:</label>
+                    <input type="text" id="lastName" name="lastName" required />
+                    <div class="error-message" id="lastNameError"></div>
+
+                    <label for="email">אימייל:</label>
+                    <input type="email" id="email" name="email" required />
+                    <div class="error-message" id="emailError"></div>
+
+                    <label for="password">סיסמה:</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" name="password" required />
+                        <button type="button" class="toggle-password" id="togglePassword" aria-label="הצג סיסמה">
+                            <img src="{{ url_for('static', filename='images/eye_icon.svg') }}" alt="Toggle Password" />
+                        </button>
+                    </div> 
+
+                    <div class="form-spacing"></div>
+
+                    <button type="submit" class="register-book-btn">הירשם</button>
+
+                    <div class="flashes">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="flash-message {{ category }}">{{ message }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+
+                    <p class="register-link">יש לך חשבון? <a href="{{ url_for('login_page') }}">התחברות</a></p>
+                </form>
+            </main>
+        </div>
+    </div>
+
+{% endblock %}

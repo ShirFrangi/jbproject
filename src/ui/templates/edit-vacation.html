@@ -1,0 +1,110 @@
+{% extends "layout.html" %}
+
+{% block mainContent %}
+<div class="add-vacation-page">
+  <div class="login-wrapper">
+    <div class="login-box">
+      <a href="{{ url_for('home_page') }}" class="back-to-home" aria-label="חזרה למסך הבית">
+        <img src="{{ url_for('static', filename='images/back_arrow.svg') }}" alt="חץ חזרה" />
+        חזרה למסך הבית
+      </a>
+
+      <main class="login-container">
+        <h2>עריכת חופשה</h2>
+
+        <form id="editVacationForm" action="{{ url_for('edit_vacation', vacation_id=vacation.vacation_id) }}" method="post" enctype="multipart/form-data">
+          
+          <!-- יעד -->
+          <div class="form-group">
+            <div class="dropdown" dir="rtl">
+              <label for="destinationDropdown" class="form-label d-block text-end mb-1">יעד:</label>
+              <button
+                class="btn custom-dropdown-toggle dropdown-toggle"
+                type="button"
+                id="destinationDropdown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <span id="dropdown-text">
+                  {{ form_data.destination if form_data and form_data.destination else '&nbsp;' }}
+                </span>
+              </button>
+              <ul class="dropdown-menu w-100 text-end" aria-labelledby="destinationDropdown">
+                {% for country in countries %}
+                <li>
+                  <button class="dropdown-item" type="button"
+                          data-id="{{ country.country_id }}"
+                          data-name="{{ country.country_name }}">
+                    {{ country.country_name }}
+                  </button>
+                </li>
+                {% endfor %}
+              </ul>
+              <input type="hidden" name="destination" id="destinationInput"
+                     value="{{ form_data.destination if form_data and form_data.destination else '' }}">
+              <input type="hidden" name="destination_id" id="destinationIdInput"
+                     value="{{ form_data.destination_id if form_data and form_data.destination_id else '' }}">
+            </div>
+          </div>
+
+          <!-- תאריכים -->
+          <div class="form-group">
+            <label for="dateRangeInput">תאריכים:</label>
+            <div class="date-picker-wrapper">
+              <input type="text" id="dateRangeInput" name="dateRangeInput" class="date-picker"
+                     value="{{ form_data.date_range if form_data and form_data.date_range else '' }}" />
+              <span class="calendar-icon"><i class="bi bi-calendar3"></i></span>
+            </div>
+          </div>
+
+          <!-- מחיר -->
+          <div class="form-group">
+            <label for="price">מחיר:</label>
+            <input type="text" id="price" name="price"
+                   value="{{ form_data.price if form_data and form_data.price else '' }}" required />
+          </div>
+
+          <!-- תיאור -->
+          <div class="form-group">
+            <label for="vacation_info">תיאור:</label>
+            <textarea id="vacation_info" name="vacation_info" rows="4"
+              style="border-radius: 8px; border: 1px solid #ccc; padding: 10px; font-size: 0.95rem; resize: vertical;">{{ form_data.vacation_info if form_data and form_data.vacation_info else '' }}</textarea>
+          </div>
+
+          <!-- תמונה -->
+          <div class="form-group">
+            <div class="image-upload-wrapper">
+              <label for="image" class="image-field-title">תמונה:</label>
+              <label for="image" class="custom-file-upload {% if form_data.photo_file_path %}preview-visible{% endif %}" id="uploadLabel">
+                <i class="bi bi-image upload-icon" id="uploadIcon"></i>
+                <span class="upload-text">שנה קובץ</span>
+                <img 
+                  id="preview-image" 
+                  class="preview-image {% if not form_data.photo_file_path %}hidden{% endif %}" 
+                  src="{{ url_for('static', filename='images/vacation_images/' ~ form_data.photo_file_path) if form_data.photo_file_path else '' }}"
+                  data-existing="{{ url_for('static', filename='images/vacation_images/' ~ form_data.photo_file_path) if form_data.photo_file_path else '' }}"
+                  alt="תצוגת תמונה" />
+              </label>            
+              <input type="file" id="image" name="image" accept="image/*" style="display: none;" />
+              <span id="file-name" class="file-name"></span>
+            </div>
+          </div>
+
+          <button type="submit" class="book-btn">עדכן חופשה</button>
+
+          {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+          <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+          {% endwith %}
+
+        </form>
+      </main>
+    </div>
+  </div>
+</div>
+{% endblock %}
