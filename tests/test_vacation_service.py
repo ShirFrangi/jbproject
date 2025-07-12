@@ -44,8 +44,8 @@ class TestVacationService(unittest.TestCase):
         vacation = self.vacation_service.add_vacation(
             country_id=1, 
             vacation_info="Test Vacation", 
-            vacation_start_date=date(2025, 5, 1),
-            vacation_end_date=date(2025, 5, 10),
+            vacation_start_date=date(2026, 5, 1),
+            vacation_end_date=date(2026, 5, 10),
             price=5000, 
             photo_file_path="path/to/photo.jpg"
         )

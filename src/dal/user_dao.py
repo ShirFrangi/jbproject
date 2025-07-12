@@ -27,24 +27,24 @@ class UserDAO:
             result = cur.fetchall()
             
         return [User(user_id=row['user_id'], first_name=row['first_name'], last_name=row['last_name'],
-                     email=row['email'], password=row['password'], role_id=row['role_id']) for row in result]
+                     email=row['email'], hashed_password=row['hashed_password'], role_id=row['role_id']) for row in result]
 
 
-    def add_user(self, first_name: str, last_name: str, email: str, password: str) -> User:
+    def add_user(self, first_name: str, last_name: str, email: str, hashed_password: str) -> User:
         """
         Add a new user to the 'users' table with the provided details.
         Returns: User: A User object representing the inserted user, including all columns and their values.
         """
         role_id = 1
         with self.db_conn.cursor(row_factory=pgrows.dict_row) as cur:
-            query = SQL("INSERT INTO {} (first_name, last_name, email, password, role_id) VALUES (%s, %s, %s, %s, %s) RETURNING *").format(
+            query = SQL("INSERT INTO {} (first_name, last_name, email, hashed_password, role_id) VALUES (%s, %s, %s, %s, %s) RETURNING *").format(
                 Identifier(self.table_name))
-            cur.execute(query, (first_name, last_name, email, password, role_id))
+            cur.execute(query, (first_name, last_name, email, hashed_password, role_id))
             self.db_conn.commit()
             result = cur.fetchone()
         
         return User(user_id=result['user_id'], first_name=result['first_name'], last_name=result['last_name'],
-                    email=result['email'], password=result['password'], role_id=result['role_id'])
+                    email=result['email'], hashed_password=result['hashed_password'], role_id=result['role_id'])
 
         
     def get_user_by_id(self, user_id: int) -> User | None:
@@ -60,7 +60,7 @@ class UserDAO:
             
         
         return User(user_id=result['user_id'], first_name=result['first_name'], last_name=result['last_name'],
-                    email=result['email'], password=result['password'], role_id=result['role_id']) if result else None
+                    email=result['email'], hashed_password=result['hashed_password'], role_id=result['role_id']) if result else None
         
         
     def update_user_value_by_id(self, user_id: int, column_to_update: str, new_value: str) -> User | None:
@@ -77,7 +77,7 @@ class UserDAO:
             result = cur.fetchone()
             
         return User(user_id=result['user_id'], first_name=result['first_name'], last_name=result['last_name'],
-                email=result['email'], password=result['password'], role_id=result['role_id']) if result else None
+                email=result['email'], hashed_password=result['hashed_password'], role_id=result['role_id']) if result else None
         
         
     def delete_user_by_id(self, user_id: int) -> User | None:
@@ -93,24 +93,41 @@ class UserDAO:
             result = cur.fetchone()
 
         return User(user_id=result['user_id'], first_name=result['first_name'], last_name=result['last_name'],
-               email=result['email'], password=result['password'], role_id=result['role_id']) if result else None
+               email=result['email'], hashed_password=result['hashed_password'], role_id=result['role_id']) if result else None
         
     
-    def get_user_by_email_and_password(self, email: str, password: str) -> User | None:
+    def get_user_by_email_and_password(self, email: str, hashed_password: str) -> User | None:
         """
-        Retrieves a user from the 'users' table by email and password.
-        Args: email (str), password (str).
-        Returns: User: A User object representing the user with the specified email and password, or None if no user is found.
+        Retrieves a user from the 'users' table by email and hashed_password.
+        Args: email (str), hashed_password (str).
+        Returns: User: A User object representing the user with the specified email and hashed_password, or None if no user is found.
         """
         with self.db_conn.cursor(row_factory=pgrows.dict_row) as cur:
             query = SQL("SELECT * FROM {} WHERE {} = {} AND {} = {}").format(
-                Identifier(self.table_name), Identifier("email"), Placeholder(), Identifier("password"), Placeholder())
-            cur.execute(query, (email, password))
+                Identifier(self.table_name), Identifier("email"), Placeholder(), Identifier("hashed_password"), Placeholder())
+            cur.execute(query, (email, hashed_password))
             result = cur.fetchone()
             
         
         return User(user_id=result['user_id'], first_name=result['first_name'], last_name=result['last_name'],
-                    email=result['email'], password=result['password'], role_id=result['role_id']) if result else None
+                    email=result['email'], hashed_password=result['hashed_password'], role_id=result['role_id']) if result else None
+        
+    
+    def get_user_by_email(self, email: str) -> User | None:
+        """
+        Retrieves a user from the 'users' table by email.
+        Args: email (str).
+        Returns: User: A User object representing the user with the specified email and hashed_password, or None if no user is found.
+        """
+        with self.db_conn.cursor(row_factory=pgrows.dict_row) as cur:
+            query = SQL("SELECT * FROM {} WHERE {} = {}").format(
+                Identifier(self.table_name), Identifier("email"), Placeholder())
+            cur.execute(query, (email,))
+            result = cur.fetchone()
+            
+        
+        return User(user_id=result['user_id'], first_name=result['first_name'], last_name=result['last_name'],
+                    email=result['email'], hashed_password=result['hashed_password'], role_id=result['role_id']) if result else None
     
     
     def email_exists(self, email: str) -> bool:

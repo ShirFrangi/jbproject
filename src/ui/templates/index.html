@@ -12,7 +12,7 @@
 <!-- כרטיסיות- חופשות -->
 <main class="vacations-container">
     {% if is_admin %}
-        <div class="vacation-card add-new-card" onclick="window.location.href='{{ url_for('add_vacation') }}'">
+        <div class="vacation-card add-new-card" onclick="window.location.href='{{ url_for('vacations.add_vacation') }}'">
             <div class="plus-wrapper">
                 <i class="bi bi-plus-lg"></i>
                 <p>הוסף חופשה</p>
@@ -24,7 +24,7 @@
 
             {% if is_admin %}
                 <div class="admin-controls">
-                    <i class="bi bi-pencil edit-icon" title="ערוך" onclick="event.stopPropagation(); window.location.href='{{ url_for('edit_vacation', vacation_id=vacation.vacation_id) }}'"></i>
+                    <i class="bi bi-pencil edit-icon" title="ערוך" onclick="event.stopPropagation(); window.location.href='{{ url_for('vacations.edit_vacation', vacation_id=vacation.vacation_id) }}'"></i>
                     <i class="bi bi-trash delete-icon" title="מחק" onclick="showDeleteConfirmation({{ vacation.vacation_id }}, event)"></i>
                 </div>
             {% else %}
@@ -41,7 +41,7 @@
             <img src="{{ url_for('static', filename='images/vacation_images/' ~ vacation.photo_file_path) }}" alt="{{ vacation.vacation_name }}" />
             <div class="card-header">
                 <h3>{{ vacation.country_name }}</h3>
-                <span class="dates">{{ vacation.vacation_end_date.strftime("%d.%m") }}–{{ vacation.vacation_start_date.strftime("%d.%m") }}</span>
+                <span class="dates">{{ vacation.vacation_start_date.strftime("%d.%m") }}-{{ vacation.vacation_end_date.strftime("%d.%m") }}</span>
             </div>
             <p class="description">{{ vacation.vacation_info }}</p>
             <div class="card-footer price-row">

@@ -4,7 +4,7 @@
 <div class="add-vacation-page">
   <div class="login-wrapper">
     <div class="login-box">
-      <a href="{{ url_for('home_page') }}" class="back-to-home" aria-label="חזרה למסך הבית">
+      <a href="{{ url_for('vacations.home_page') }}" class="back-to-home" aria-label="חזרה למסך הבית">
         <img src="{{ url_for('static', filename='images/back_arrow.svg') }}" alt="חץ חזרה" />
         חזרה למסך הבית
       </a>
@@ -12,7 +12,7 @@
       <main class="login-container">
         <h2>עריכת חופשה</h2>
 
-        <form id="editVacationForm" action="{{ url_for('edit_vacation', vacation_id=vacation.vacation_id) }}" method="post" enctype="multipart/form-data">
+        <form id="editVacationForm" action="{{ url_for('vacations.edit_vacation', vacation_id=vacation.vacation_id) }}" method="post" enctype="multipart/form-data">
           
           <!-- יעד -->
           <div class="form-group">

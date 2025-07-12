@@ -6,7 +6,7 @@
         <div class="login-box">
             <main class="login-container">
                 <h2 class="section-title">הרשמה</h2>
-                <form id="loginForm" class="login-form" method="POST" action="{{ url_for('register_page') }}">
+                <form id="loginForm" class="login-form" method="POST" action="{{ url_for('auth.register_page') }}">
                     <label for="firstName">שם פרטי:</label>
                     <input type="text" id="firstName" name="firstName" required />
                     <div class="error-message" id="firstNameError"></div>
@@ -41,7 +41,7 @@
                         {% endwith %}
                     </div>
 
-                    <p class="register-link">יש לך חשבון? <a href="{{ url_for('login_page') }}">התחברות</a></p>
+                    <p class="register-link">יש לך חשבון? <a href="{{ url_for('auth.login_page') }}">התחברות</a></p>
                 </form>
             </main>
         </div>

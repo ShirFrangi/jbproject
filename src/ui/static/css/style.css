@@ -134,6 +134,32 @@ header {
     text-decoration: none;
 }
 
+main.container {
+    margin: 80px auto;
+    text-align: center;
+    margin-bottom: 430px;
+    margin-top: 200px;
+}
+
+.btn-return-home {
+    background-color: #f5f5f5;
+    color: #002244;
+    padding: 12px 28px;
+    border: 1px solid #dcdcdc;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-return-home:hover {
+    background-color: #e6e6e6;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.5);
+    color: #002244;
+    border: 1px solid #dcdcdc;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 /* main */
 .form-group {
     margin-bottom: 20px;

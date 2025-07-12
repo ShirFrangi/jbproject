@@ -9,6 +9,9 @@ from src.dal.vacation_dao import VacationDAO
 from src.models.user_dto import User
 from src.models.like_dto import Like
 
+# external packages
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 class UserService:
     def __init__(self, env='prod'):
@@ -37,11 +40,17 @@ class UserService:
         if UserDAO(env=self.env).email_exists(email):
             raise errors.InvalidInputError("Email already exists")
         
-        user_registered = UserDAO(env=self.env).add_user(first_name, last_name, email, password)
+        hashed_password = generate_password_hash(
+            password,
+            method='pbkdf2:sha256',
+            salt_length=16
+        )
+        
+        user_registered = UserDAO(env=self.env).add_user(first_name, last_name, email, hashed_password)
         return user_registered
         
     
-    def login(self, email: str, password: str) -> User:
+    def login(self, email: str, password: str) -> User | None:
         """
         Authenticates a user by email and password. Returns the user object if login is successful.
         """
@@ -63,9 +72,10 @@ class UserService:
         if not UserDAO(env=self.env).email_exists(email):
             return None
         
-        user_logged_in = UserDAO(env=self.env).get_user_by_email_and_password(email, password)
-            
-        return user_logged_in
+        user = UserDAO(env=self.env).get_user_by_email(email)
+        
+        if check_password_hash(user.hashed_password, password):
+            return user
     
     
     def add_like(self, user_id: int, vacation_id: int) -> Like:

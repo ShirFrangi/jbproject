@@ -8,7 +8,7 @@ CREATE TABLE users (
     first_name VARCHAR(20), 
     last_name VARCHAR(20), 
     email VARCHAR(40) UNIQUE NOT NULL, 
-    password VARCHAR(20) NOT NULL, 
+    hashed_password VARCHAR(255) NOT NULL, 
     role_id INT NOT NULL, 
     FOREIGN KEY (role_id) REFERENCES roles(role_id)
 );
@@ -41,9 +41,9 @@ INSERT INTO roles (role_name) VALUES
     ('user'), 
     ('admin');
 
-INSERT INTO users (first_name, last_name, email, password, role_id) VALUES 
-    ('Shir', 'Frangi', 'shir@gmail.com', '1234', 2), 
-    ('Test', 'Test', 'test@gmail.com', '1234', 1);
+INSERT INTO users (first_name, last_name, email, hashed_password, role_id) VALUES 
+    ('Shir', 'Frangi', 'shir@gmail.com', 'pbkdf2:sha256:1000000$LuQuSLWArUV5KcIV$f72f7b6f3e5ca84886f5ee1f671ea2574e5d9ad10b2159f3381e21537df2f07f', 2), 
+    ('Test', 'Test', 'test@gmail.com', 'pbkdf2:sha256:1000000$LuQuSLWArUV5KcIV$f72f7b6f3e5ca84886f5ee1f671ea2574e5d9ad10b2159f3381e21537df2f07f', 1);
 
 INSERT INTO countries (country_name) VALUES 
     ('צרפת'), ('ספרד'), ('ארצות הברית'), ('סין'), ('איטליה'), 

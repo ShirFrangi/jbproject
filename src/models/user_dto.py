@@ -7,7 +7,7 @@ class User:
     first_name: str
     last_name: str
     email: str
-    password: str
+    hashed_password: str
     role_id: int
 
 # 

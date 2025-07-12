@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const destinationText = dropdownText?.innerText.trim() || "";
             const dateRange = document.getElementById("dateRangeInput")?.value.trim() || "";
             const price = priceInput?.value.trim() || "";
-            const description = document.getElementById("description")?.value.trim() || "";
+            const description = document.getElementById("vacation_info")?.value.trim() || "";
             const isEditPage = document.getElementById("editVacationForm") !== null;
 
             document.querySelectorAll(".flash-message").forEach(msg => msg.remove());

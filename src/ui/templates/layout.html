@@ -18,7 +18,7 @@
             <header>
                 <nav class="navbar bg-body-tertiary fixed-top">
                     <div class="container-fluid navbar-custom">
-                        <a class="navbar-brand" href="{{ url_for('home_page') }}">
+                        <a class="navbar-brand" href="{{ url_for('vacations.home_page') }}">
                             <div class="logo-container text-center">
                                 <img src="{{ url_for('static', filename='images/TravelAir_logo.svg') }}" alt="TravelAir logo" class="logo-svg" />
                                 <div class="logo-text">TravelAir</div>
@@ -41,17 +41,17 @@
                                 <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                                     {% if session["user_name"] %}
                                     <li class="nav-item">
-                                        <a class="nav-link active" aria-current="page" href="{{ url_for('home_page') }}">בית</a>
+                                        <a class="nav-link active" aria-current="page" href="{{ url_for('vacations.home_page') }}">בית</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="{{ url_for('logout') }}">התנתקות</a>
+                                        <a class="nav-link" href="{{ url_for('auth.logout') }}">התנתקות</a>
                                     </li>
                                     {% else %}
                                     <li class="nav-item">
-                                        <a class="nav-link" href="{{ url_for('login_page') }}">התחברות</a>
+                                        <a class="nav-link" href="{{ url_for('auth.login_page') }}">התחברות</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="{{ url_for('register_page') }}">הרשמה</a>
+                                        <a class="nav-link" href="{{ url_for('auth.register_page') }}">הרשמה</a>
                                     </li>
                                     {% endif %}
                                 </ul>
