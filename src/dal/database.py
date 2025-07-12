@@ -16,7 +16,7 @@ except Exception as e:
     print(f"Error connecting to DB: {e}")
 
 
-def initialize_database(env='dev') -> str:
+def initialize_database(env: str ='dev') -> str:
     """
     Initializes the database by dropping existing tables and recreating them 
     using SQL commands from the 'init_db.sql' file.

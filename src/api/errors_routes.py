@@ -1,7 +1,9 @@
 # external packages
 from flask import Blueprint, render_template
 
+
 bp = Blueprint("errors", __name__)
+
 
 @bp.app_errorhandler(400)
 def bad_request(e):

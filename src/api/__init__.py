@@ -7,6 +7,7 @@ from src import config
 
 # external packages
 from flask import Flask
+from flask_wtf import CSRFProtect
 
 def create_app():
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -18,7 +19,7 @@ def create_app():
 
     app.secret_key = os.getenv("SECRET_KEY", "some_secret_key")
     app.config.from_object(config)
-
+    
     app.register_blueprint(auth_routes.bp)
     app.register_blueprint(vacation_routes.bp)
     app.register_blueprint(errors_routes.bp)

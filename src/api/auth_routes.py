@@ -12,6 +12,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 
 bp = Blueprint('auth', __name__)
 
+
 @bp.route("/login", methods=["GET", "POST"])
 def login_page():
     """

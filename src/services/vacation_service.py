@@ -10,7 +10,7 @@ from src.models.vacation_dto import Vacation
 
 
 class VacationService:
-    def __init__(self, env='prod'):
+    def __init__(self, env: str ='prod'):
         self.env = env
         
     def get_vacations(self) -> List[Vacation]:

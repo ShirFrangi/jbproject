@@ -6,6 +6,7 @@ from src.dal.database import initialize_database
 
 if __name__ == "__main__":
     env = 'prod'
+    test_env = 'dev'
     test_all()
     initialize_database(env)
     app = create_app()

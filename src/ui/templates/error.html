@@ -13,17 +13,6 @@
             שגיאה — משהו השתבש
         {% endif %}
     </h1>
-    <p class="lead mt-3">
-        {% if status_code == 400 %}
-            הבקשה שלך לא הובנה על ידי השרת. אנא בדוק ונסה שוב.
-        {% elif status_code == 404 %}
-            הדף שחיפשת לא קיים. בדוק את הכתובת או חזור לדף הבית.
-        {% elif status_code == 500 %}
-            אירעה תקלה בשרת שלנו. נסה שוב מאוחר יותר.
-        {% else %}
-            איננו יודעים בדיוק מה קרה, אך אנחנו עובדים על זה.
-        {% endif %}
-    </p>
     <a href="{{ url_for('vacations.home_page') }}" class="btn btn-primary btn-return-home mt-3">חזרה לדף הבית</a>
 </main>
 {% endblock %}
