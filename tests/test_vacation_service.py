@@ -18,6 +18,7 @@ class TestVacationService(unittest.TestCase):
 
        
     # ---Tests for get vacations function---
+    
     def test_get_vacations_success(self):
         """
         Positive test: get all vacations.
@@ -38,6 +39,7 @@ class TestVacationService(unittest.TestCase):
     
     
     # ---Tests for add vacation function---
+    
     def test_add_vacation_success(self):
         """
         Positive test: add vacation.
@@ -150,6 +152,7 @@ class TestVacationService(unittest.TestCase):
         
         
     # ---Tests for update vacation function---
+    
     def test_update_vacation_success(self):
         """
         Positive test: update vacation.
@@ -252,6 +255,7 @@ class TestVacationService(unittest.TestCase):
         
 
     # ---Tests for update vacation function---
+    
     def test_delete_vacation_success(self):
         """
         Positive test: delete vacation.

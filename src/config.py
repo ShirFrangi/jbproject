@@ -16,6 +16,6 @@ display_env = 'dev'
 # --- Default path for saving files - vacation photos ---
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_FOLDER = os.path.join(
-    BASE_DIR, "ui", "static", "images", "vacation_images")
+BASE_DIR, "ui", "static", "images", "vacation_images")
 
 #
