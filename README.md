@@ -1,17 +1,19 @@
-## Student Name: Shir Frangi
-
-## jbproject
+# jbproject - Shir Frangi
 This is the code for John Bryce Full Stack Python Project
 
-## Comments
-1. Currently, the tests are testing a DEV environment. To test a PROD environment, you must change the "setUp" method in each test. For example:
 
-    def setUp(self):
-        self.user_service = UserService(env='prod')
-        initialize_database(env='prod')
-
-2. When running the project for the first time, the following queries must be executed:
+## Running the Project for the First Time
+When running the project for the first time, the following queries must be executed:
     """
     CREATE DATABASE jbproject_prod;
     CREATE DATABASE jbproject_dev;
     """
+
+## Default Setup
+By default, the application and tests run using the development (dev) environment. This means they connect to development resources and databases, keeping production data safe.
+
+## Switching to Production
+If you want to run the application or tests against the production (prod) environment, you need to update the environment settings in the config.py file. For example:
+
+test_env = 'prod'
+display_env = 'prod'

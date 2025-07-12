@@ -9,7 +9,7 @@ prod_db_conn_info = f"postgresql://postgres:postgres@localhost:5432/{prod_db_nam
 dev_db_name = 'jbproject_dev'
 dev_db_conn_info = f"postgresql://postgres:postgres@localhost:5432/{dev_db_name}"
 
-# --- Application Environment Configuration ('dev'/'prod') ---
+# --- Application and testing Environment configuration ('dev'/'prod') ---
 test_env = 'dev'
 display_env = 'dev'
 
