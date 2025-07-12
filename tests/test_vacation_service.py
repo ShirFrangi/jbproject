@@ -31,7 +31,7 @@ class TestVacationService(unittest.TestCase):
         """
         Negative test: empty vacation list.
         """
-        VacationDAO(env='dev').delete_all_vacations()
+        VacationDAO(env=test_env).delete_all_vacations()
         with self.assertRaises(Exception) as context:
             self.vacation_service.get_vacations()
         self.assertEqual(str(context.exception), "No vacations found.")

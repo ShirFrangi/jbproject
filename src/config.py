@@ -10,8 +10,8 @@ dev_db_name = 'jbproject_dev'
 dev_db_conn_info = f"postgresql://postgres:postgres@localhost:5432/{dev_db_name}"
 
 # --- Application and testing Environment configuration ('dev'/'prod') ---
-test_env = 'dev'
-display_env = 'dev'
+test_env = 'prod'
+display_env = 'prod'
 
 # --- Default path for saving files - vacation photos ---
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))

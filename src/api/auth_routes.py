@@ -7,9 +7,8 @@ from src.config import display_env
 # external packages
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, abort
 
-
-bp = Blueprint('auth', __name__)
 env = display_env
+bp = Blueprint('auth', __name__, url_prefix=f"/{env}")
 
 
 @bp.route("/login", methods=["GET", "POST"])
@@ -52,7 +51,7 @@ def login_page():
         return redirect(url_for("auth.login_page"))
     
     # GET
-    return render_template("login.html")
+    return render_template("login.html", env=display_env)
 
 
 @bp.route("/register", methods=["GET", "POST"])
@@ -99,7 +98,7 @@ def register_page():
         return redirect(url_for("auth.register_page"))
     
     # GET
-    return render_template("register.html")
+    return render_template("register.html", env=display_env)
 
 
 @bp.route("/logout")

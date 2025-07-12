@@ -15,9 +15,8 @@ from src.services.user_service import UserService
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify, abort
 from werkzeug.utils import secure_filename
 
-
-bp = Blueprint('vacations', __name__)
 env = display_env
+bp = Blueprint('vacations', __name__, url_prefix=f"/{env}")
 
 
 @bp.route("/")
@@ -33,7 +32,7 @@ def home_page():
     liked_vacations = LikeDAO(env=env).get_liked_vacation_ids_by_user(
         session["user_id"])
 
-    return render_template("index.html", vacations=vacations, countries=countries, is_admin=is_admin, liked_vacations=liked_vacations)
+    return render_template("index.html", vacations=vacations, countries=countries, is_admin=is_admin, liked_vacations=liked_vacations, env=display_env)
 
 
 @bp.route("/add-vacation", methods=["GET", "POST"])
@@ -63,7 +62,7 @@ def add_vacation():
 
         if not all_fields_filled(destination_id, date_range, price_raw, vacation_info, file):
             flash("יש למלא את כל השדות", "error")
-            return render_template("add-vacation.html", countries=countries, form_data=form_data)
+            return render_template("add-vacation.html", countries=countries, form_data=form_data, env=display_env)
 
         try:
             country_id = int(destination_id)
@@ -75,19 +74,19 @@ def add_vacation():
 
         except Exception:
             flash("פורמט נתונים שגוי", "error")
-            return render_template("add-vacation.html", countries=countries, form_data=form_data)
+            return render_template("add-vacation.html", countries=countries, form_data=form_data, env=display_env)
 
         if price <= 0 or price > 10_000:
             flash("יש להזין מחיר בין 1₪-10,000₪", "error")
-            return render_template("add-vacation.html", countries=countries, form_data=form_data)
+            return render_template("add-vacation.html", countries=countries, form_data=form_data, env=display_env)
 
         if end_date < start_date:
             flash("תאריך סיום לא יכול להיות לפני תאריך התחלה", "error")
-            return render_template("add-vacation.html", countries=countries, form_data=form_data)
+            return render_template("add-vacation.html", countries=countries, form_data=form_data, env=display_env)
 
         if start_date < today or end_date < today:
             flash("לא ניתן לבחור תאריכים שכבר עברו", "error")
-            return render_template("add-vacation.html", countries=countries, form_data=form_data)
+            return render_template("add-vacation.html", countries=countries, form_data=form_data, env=display_env)
 
         os.makedirs(UPLOAD_FOLDER, exist_ok=True)
         filename = secure_filename(file.filename)
@@ -102,10 +101,10 @@ def add_vacation():
 
         except Exception:
             flash("שגיאה בהוספת חופשה", "error")
-            return render_template("add-vacation.html", countries=countries, form_data=form_data)
+            return render_template("add-vacation.html", countries=countries, form_data=form_data, env=display_env)
 
     # GET
-    return render_template("add-vacation.html", countries=countries)
+    return render_template("add-vacation.html", countries=countries, env=display_env)
 
 
 @bp.route("/edit-vacation/<int:vacation_id>", methods=["GET", "POST"])
@@ -137,7 +136,7 @@ def edit_vacation(vacation_id):
         if not all([destination_id, date_range, price_raw, vacation_info]):
             flash("יש למלא את כל השדות", "error")
             return render_template(
-                "edit-vacation.html", vacation=vacation, countries=countries, form_data=form_data
+                "edit-vacation.html", vacation=vacation, countries=countries, form_data=form_data, env=display_env
             )
 
         try:
@@ -150,19 +149,19 @@ def edit_vacation(vacation_id):
         except Exception:
             flash("פורמט נתונים שגוי", "error")
             return render_template(
-                "edit-vacation.html", vacation=vacation, countries=countries, form_data=form_data
+                "edit-vacation.html", vacation=vacation, countries=countries, form_data=form_data, env=display_env
             )
 
         if price <= 0 or price > 10_000:
             flash("יש להזין מחיר בין 1₪ ל-10,000₪", "error")
             return render_template(
-                "edit-vacation.html", vacation=vacation, countries=countries, form_data=form_data
+                "edit-vacation.html", vacation=vacation, countries=countries, form_data=form_data, env=display_env
             )
 
         if end_date < start_date:
             flash("תאריך הסיום לא יכול להיות מוקדם מתאריך ההתחלה", "error")
             return render_template(
-                "edit-vacation.html", vacation=vacation, countries=countries, form_data=form_data
+                "edit-vacation.html", vacation=vacation, countries=countries, form_data=form_data, env=display_env
             )
 
         filename = vacation.photo_file_path
@@ -195,7 +194,8 @@ def edit_vacation(vacation_id):
         "edit-vacation.html",
         vacation=vacation,
         countries=countries,
-        form_data=form_data
+        form_data=form_data,
+        env=display_env
     )
 
 

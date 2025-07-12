@@ -229,10 +229,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+const envPrefix = document.querySelector('meta[name="env-prefix"]').getAttribute('content');
 
 // send delete request to the server
 function handleDelete(vacationId) {
-    fetch(`/delete-vacation/${vacationId}`, {
+    fetch(`/${envPrefix}/delete-vacation/${vacationId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken}
     })
@@ -272,7 +273,7 @@ function handleLikeClick(event) {
     const icon = event.currentTarget;
     const vacationId = icon.getAttribute("data-vacation-id");
 
-    fetch("/like", {
+    fetch(`/${envPrefix}/like`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken},
         credentials: "include",

@@ -9,8 +9,9 @@ from src.dal.database import initialize_database
 
 class TestAuthApi(unittest.TestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls): 
         initialize_database(env=test_env)
+        cls.env = test_env
         cls.app = create_app()
         cls.app.config["TESTING"] = True
         cls.app.config["WTF_CSRF_ENABLED"] = False 
@@ -26,7 +27,7 @@ class TestAuthApi(unittest.TestCase):
         """
         positive test: get login page.
         """
-        res = self.client.get("/login")
+        res = self.client.get(f"/{self.env}/login")
         self.assertEqual(res.status_code, 200)
         self.assertIn("התחברות", res.data.decode())
 
@@ -35,7 +36,7 @@ class TestAuthApi(unittest.TestCase):
         """
         positive test: user login.
         """
-        res = self.client.post("/login", data={
+        res = self.client.post(f"/{self.env}/login", data={
             "email": "shir@gmail.com",
             "password": "1234"
         }, follow_redirects=True)
@@ -47,7 +48,7 @@ class TestAuthApi(unittest.TestCase):
         """
         Negative test: missing_fields.
         """
-        res = self.client.post("/login", data={
+        res = self.client.post(f"/{self.env}/login", data={
             "email": "", "password": ""
         }, follow_redirects=True)
         self.assertEqual(res.status_code, 200)
@@ -58,7 +59,7 @@ class TestAuthApi(unittest.TestCase):
         """
         Negative test: wrong_credentials.
         """
-        res = self.client.post("/login", data={
+        res = self.client.post(f"/{self.env}/login", data={
             "email": "nonexistent@gmail.com",
             "password": "wrongpass"
         }, follow_redirects=True)
@@ -72,7 +73,7 @@ class TestAuthApi(unittest.TestCase):
         """
         positive test: get register page.
         """
-        res = self.client.get("/register")
+        res = self.client.get(f"/{self.env}/register")
         self.assertEqual(res.status_code, 200)
         self.assertIn("הרשמה", res.data.decode())
 
@@ -81,7 +82,7 @@ class TestAuthApi(unittest.TestCase):
         """
         positive test: user register.
         """
-        res = self.client.post("/register", data={
+        res = self.client.post(f"/{self.env}/register", data={
             "firstName": "Test",
             "lastName": "User",
             "email": "unique_test@example.com",
@@ -95,7 +96,7 @@ class TestAuthApi(unittest.TestCase):
         """
         Negative test: missing_fields.
         """
-        res = self.client.post("/register", data={
+        res = self.client.post(f"/{self.env}/register", data={
             "firstName": "", "lastName": "", "email": "", "password": ""
         }, follow_redirects=True)
         self.assertEqual(res.status_code, 200)
@@ -106,7 +107,7 @@ class TestAuthApi(unittest.TestCase):
         """
         Negative test: invalid_email.
         """
-        res = self.client.post("/register", data={
+        res = self.client.post(f"/{self.env}/register", data={
             "firstName": "Test",
             "lastName": "User",
             "email": "notanemail",
@@ -120,7 +121,7 @@ class TestAuthApi(unittest.TestCase):
         """
         Negative test: existing_email.
         """
-        res = self.client.post("/register", data={
+        res = self.client.post(f"/{self.env}/register", data={
             "firstName": "Test",
             "lastName": "User",
             "email": "shir@gmail.com",
@@ -141,7 +142,7 @@ class TestAuthApi(unittest.TestCase):
             sess["role_id"] = 2
             sess["user_name"] = "shir"
 
-        res = self.client.get("/logout", follow_redirects=True)
+        res = self.client.get(f"/{self.env}/logout", follow_redirects=True)
         self.assertEqual(res.status_code, 200)
         self.assertIn("התחברות", res.data.decode())
 
