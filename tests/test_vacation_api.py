@@ -12,9 +12,10 @@ class TestVacationApi(unittest.TestCase):
     def setUpClass(cls):
         initialize_database(env=test_env)
         cls.app = create_app()
-        cls.app.testing = True
+        cls.app.config["TESTING"] = True
+        cls.app.config["WTF_CSRF_ENABLED"] = False
         cls.client = cls.app.test_client()
-        
+
     def setUp(self):
         with self.client.session_transaction() as sess:
             sess.clear()
@@ -34,7 +35,6 @@ class TestVacationApi(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIn("חופשות", res.data.decode())
 
-
     def test_home_page_negative(self):
         """
         negative test: get home page without login redirects to login.
@@ -43,7 +43,6 @@ class TestVacationApi(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIn("התחברות", res.data.decode())
 
-
     # --- Tests for add_vacation route ---
 
     def test_add_vacation_get_positive(self):
@@ -51,12 +50,11 @@ class TestVacationApi(unittest.TestCase):
         positive test: admin can access add-vacation GET page.
         """
         with self.client.session_transaction() as sess:
-            sess["role_id"] = 2 
+            sess["role_id"] = 2
 
         res = self.client.get("/add-vacation")
         self.assertEqual(res.status_code, 200)
         self.assertIn("הוספת חופשה", res.data.decode())
-
 
     def test_add_vacation_get_negative(self):
         """
@@ -67,7 +65,6 @@ class TestVacationApi(unittest.TestCase):
 
         res = self.client.get("/add-vacation")
         self.assertEqual(res.status_code, 403)
-
 
     def test_add_vacation_post_positive(self):
         """
@@ -89,8 +86,7 @@ class TestVacationApi(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertIn("החופשה נוספה בהצלחה", res.data.decode())
-    
-    
+
     def test_add_vacation_post_negative(self):
         """
         negative test: admin submits empty form, expect error flash.
@@ -101,7 +97,6 @@ class TestVacationApi(unittest.TestCase):
         res = self.client.post("/add-vacation", data={}, follow_redirects=True)
         self.assertEqual(res.status_code, 200)
         self.assertIn("יש למלא את כל השדות", res.data.decode())
-
 
     # --- Tests for edit_vacation route ---
 
@@ -116,7 +111,6 @@ class TestVacationApi(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIn("עריכת חופשה", res.data.decode())
 
-
     def test_edit_vacation_get_negative(self):
         """
         negative test: admin requests edit page for non-existing vacation id.
@@ -126,7 +120,6 @@ class TestVacationApi(unittest.TestCase):
 
         res = self.client.get("/edit-vacation/99999")
         self.assertEqual(res.status_code, 404)
-
 
     def test_edit_vacation_post_positive(self):
         """
@@ -146,7 +139,6 @@ class TestVacationApi(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIn("החופשה עודכנה בהצלחה", res.data.decode())
 
-
     def test_edit_vacation_post_negative(self):
         """
         negative test: admin submits empty form on edit-vacation POST.
@@ -154,10 +146,10 @@ class TestVacationApi(unittest.TestCase):
         with self.client.session_transaction() as sess:
             sess["role_id"] = 2
 
-        res = self.client.post("/edit-vacation/3", data={}, follow_redirects=True)
+        res = self.client.post(
+            "/edit-vacation/3", data={}, follow_redirects=True)
         self.assertEqual(res.status_code, 200)
         self.assertIn("יש למלא את כל השדות", res.data.decode())
-
 
     # --- Tests for delete_vacation route ---
 
@@ -172,7 +164,6 @@ class TestVacationApi(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIn('"success":true', res.data.decode())
 
-
     def test_delete_vacation_negative(self):
         """
         negative test: admin tries to delete non-existing vacation.
@@ -183,7 +174,6 @@ class TestVacationApi(unittest.TestCase):
         res = self.client.post("/delete-vacation/99999")
         self.assertEqual(res.status_code, 404)
         self.assertIn('"success":false', res.data.decode())
-
 
     # --- Tests for toggle_like route ---
 
@@ -204,7 +194,6 @@ class TestVacationApi(unittest.TestCase):
         self.assertEqual(res_remove.status_code, 200)
         self.assertIn("Like removed successfully", res_remove.json["message"])
 
-
     def test_toggle_like_negative_not_logged_in(self):
         """
         negative test: no user logged in (no session).
@@ -212,8 +201,7 @@ class TestVacationApi(unittest.TestCase):
         res = self.client.post("/like", json={"vacation_id": 7})
         self.assertEqual(res.status_code, 302)
         self.assertIn("/login", res.headers["Location"])
-        
-    
+
     def test_toggle_like_negative_missing_data(self):
         """
         negative test: logged in but missing vacation_id.

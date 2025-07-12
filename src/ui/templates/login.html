@@ -7,6 +7,7 @@
                 <h2 class="section-title">התחברות</h2>
                 
                 <form id="loginForm" class="login-form" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <label for="email">אימייל:</label>
                     <input type="email" id="email" name="email" required />
                     

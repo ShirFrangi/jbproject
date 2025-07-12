@@ -13,7 +13,7 @@
         <h2>עריכת חופשה</h2>
 
         <form id="editVacationForm" action="{{ url_for('vacations.edit_vacation', vacation_id=vacation.vacation_id) }}" method="post" enctype="multipart/form-data">
-          
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <!-- יעד -->
           <div class="form-group">
             <div class="dropdown" dir="rtl">

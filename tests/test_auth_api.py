@@ -12,7 +12,8 @@ class TestAuthApi(unittest.TestCase):
     def setUpClass(cls):
         initialize_database(env=test_env)
         cls.app = create_app()
-        cls.app.testing = True
+        cls.app.config["TESTING"] = True
+        cls.app.config["WTF_CSRF_ENABLED"] = False 
         cls.client = cls.app.test_client()
         
     def setUp(self):

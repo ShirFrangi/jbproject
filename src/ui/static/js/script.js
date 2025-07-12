@@ -228,11 +228,13 @@ document.addEventListener("DOMContentLoaded", function () {
     
 });
 
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
 // send delete request to the server
 function handleDelete(vacationId) {
     fetch(`/delete-vacation/${vacationId}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken}
     })
         .then(res => res.json())
         .then(data => {
@@ -272,7 +274,7 @@ function handleLikeClick(event) {
 
     fetch("/like", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken},
         credentials: "include",
         body: JSON.stringify({ vacation_id: vacationId })
     })

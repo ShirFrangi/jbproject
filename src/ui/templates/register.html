@@ -7,6 +7,7 @@
             <main class="login-container">
                 <h2 class="section-title">הרשמה</h2>
                 <form id="loginForm" class="login-form" method="POST" action="{{ url_for('auth.register_page') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <label for="firstName">שם פרטי:</label>
                     <input type="text" id="firstName" name="firstName" required />
                     <div class="error-message" id="firstNameError"></div>

@@ -13,7 +13,7 @@
         <h2>הוספת חופשה</h2>
 
         <form id="addVacationForm" action="{{ url_for('vacations.add_vacation') }}" class="login-form" method="POST" enctype="multipart/form-data">
-
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <!-- יעד -->
           <div class="dropdown form-group" dir="rtl">
             <label for="destinationDropdown" class="form-label d-block text-end">יעד:</label>
