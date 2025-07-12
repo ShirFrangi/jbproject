@@ -1,4 +1,4 @@
-# jbproject - Shir Frangi
+# John Bryce project - Shir Frangi
 This is the code for John Bryce Full Stack Python Project
 
 
