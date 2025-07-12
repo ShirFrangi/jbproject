@@ -5,6 +5,8 @@
     <h1 class="display-4 text-danger">
         {% if status_code == 400 %}
             שגיאה 400 — בקשה לא חוקית
+        {% elif status_code == 403 %}
+            שגיאה 403 — אין גישה
         {% elif status_code == 404 %}
             שגיאה 404 — הדף לא נמצא
         {% elif status_code == 500 %}

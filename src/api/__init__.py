@@ -7,7 +7,6 @@ from src import config
 
 # external packages
 from flask import Flask
-from flask_wtf import CSRFProtect
 
 def create_app():
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))

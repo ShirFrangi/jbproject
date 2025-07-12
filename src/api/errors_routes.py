@@ -9,6 +9,10 @@ bp = Blueprint("errors", __name__)
 def bad_request(e):
     return render_template("error.html", status_code=400), 400
 
+@bp.app_errorhandler(403)
+def page_not_found(e):
+    return render_template("error.html", status_code=404), 403
+
 @bp.app_errorhandler(404)
 def page_not_found(e):
     return render_template("error.html", status_code=404), 404

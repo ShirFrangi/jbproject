@@ -14,7 +14,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class UserService:
-    def __init__(self, env: str ='prod'):
+    def __init__(self, env: str ='dev'):
         self.env = env
         
     

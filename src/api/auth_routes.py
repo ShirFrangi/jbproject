@@ -1,16 +1,15 @@
-# built-in packages
-import re
-
 # internal packages
 from src.api.utils.api_utils import is_valid_email, is_valid_password, all_fields_filled
 from src.services.user_service import UserService
 from src.dal.user_dao import UserDAO
+from src.config import display_env
 
 # external packages
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, abort
 
 
 bp = Blueprint('auth', __name__)
+env = display_env
 
 
 @bp.route("/login", methods=["GET", "POST"])
@@ -36,7 +35,7 @@ def login_page():
             return redirect(url_for("auth.login_page"))
 
         try:
-            user = UserService().login(email, password)
+            user = UserService(env=env).login(email, password)
             if user:
                 session.update({
                     "user_id": user.user_id,
@@ -81,11 +80,11 @@ def register_page():
             return redirect(url_for("auth.register_page"))
 
         try:
-            if UserDAO().email_exists(email):
+            if UserDAO(env=env).email_exists(email):
                 flash("אימייל זה כבר קיים במערכת", category="error")
                 return redirect(url_for("auth.register_page"))
 
-            user = UserService().register(first_name, last_name, email, password)
+            user = UserService(env=env).register(first_name, last_name, email, password)
             if user:
                 session.update({
                     "user_id": user.user_id,

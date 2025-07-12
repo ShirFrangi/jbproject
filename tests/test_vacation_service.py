@@ -3,6 +3,7 @@ import unittest
 from datetime import date, timedelta
 
 # internal packages
+from src.config import test_env
 from src.services.vacation_service import VacationService
 from src.dal.vacation_dao import VacationDAO
 from src.dal.database import initialize_database
@@ -12,8 +13,8 @@ from src.models.vacation_dto import Vacation
 
 class TestVacationService(unittest.TestCase):
     def setUp(self):
-        self.vacation_service = VacationService(env='dev')
-        initialize_database(env='dev')  
+        self.vacation_service = VacationService(env=test_env)
+        initialize_database(env=test_env)  
 
        
     # ---Tests for get vacations function---

@@ -2,6 +2,7 @@
 import unittest
 
 # internal packages
+from src.config import test_env
 from src.services.user_service import UserService
 from src.dal.database import initialize_database
 from src.services import errors
@@ -11,8 +12,8 @@ from src.models.like_dto import Like
 
 class TestUserService(unittest.TestCase):
     def setUp(self):
-        self.user_service = UserService(env='dev')
-        initialize_database(env='dev')
+        self.user_service = UserService(env=test_env)
+        initialize_database(env=test_env)
 
     # ---Tests for register function---
 

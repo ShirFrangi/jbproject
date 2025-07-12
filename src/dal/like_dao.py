@@ -11,7 +11,7 @@ import psycopg.rows as pgrows
 
 
 class LikeDAO:
-    def __init__(self, env: str ='prod'):
+    def __init__(self, env: str ='dev'):
         self.table_name = "likes"
         self.db_conn = prod_db_conn if env == 'prod' else dev_db_conn
 

@@ -3,7 +3,7 @@ from datetime import datetime
 import os
 
 # internal packages
-from src.config import UPLOAD_FOLDER
+from src.config import UPLOAD_FOLDER, display_env
 from src.api.utils.api_utils import admin_required, login_required, all_fields_filled
 from src.dal.vacation_dao import VacationDAO
 from src.dal.country_dao import CountryDAO
@@ -17,6 +17,7 @@ from werkzeug.utils import secure_filename
 
 
 bp = Blueprint('vacations', __name__)
+env = display_env
 
 
 @bp.route("/")
@@ -26,10 +27,10 @@ def home_page():
     Renders the home page with all vacations and user-specific data.
     Redirects to login if the user is not authenticated.
     """
-    vacations = VacationDAO().get_all_vacations()
-    countries = CountryDAO().get_all_countries()
+    vacations = VacationDAO(env=env).get_all_vacations()
+    countries = CountryDAO(env=env).get_all_countries()
     is_admin = session.get("role_id") == 2
-    liked_vacations = LikeDAO().get_liked_vacation_ids_by_user(
+    liked_vacations = LikeDAO(env=env).get_liked_vacation_ids_by_user(
         session["user_id"])
 
     return render_template("index.html", vacations=vacations, countries=countries, is_admin=is_admin, liked_vacations=liked_vacations)
@@ -42,7 +43,7 @@ def add_vacation():
     Handles adding a vacation with validation and image upload.
     Access restricted to admin users.
     """
-    countries = CountryDAO().get_all_countries()
+    countries = CountryDAO(env=env).get_all_countries()
     countries.sort(key=lambda c: c.country_name)
 
     if request.method == "POST":
@@ -93,7 +94,7 @@ def add_vacation():
         file.save(os.path.join(UPLOAD_FOLDER, filename))
 
         try:
-            VacationService().add_vacation(
+            VacationService(env=env).add_vacation(
                 country_id, vacation_info, start_date, end_date, price, filename
             )
             flash("החופשה נוספה בהצלחה", "success")
@@ -110,11 +111,11 @@ def add_vacation():
 @bp.route("/edit-vacation/<int:vacation_id>", methods=["GET", "POST"])
 @admin_required
 def edit_vacation(vacation_id):
-    vacation = VacationDAO().get_vacation_by_id(vacation_id)
+    vacation = VacationDAO(env=env).get_vacation_by_id(vacation_id)
     if not vacation:
         abort(404)
 
-    countries = CountryDAO().get_all_countries()
+    countries = CountryDAO(env=env).get_all_countries()
     countries.sort(key=lambda c: c.country_name)
 
     if request.method == "POST":
@@ -171,7 +172,7 @@ def edit_vacation(vacation_id):
             file.save(os.path.join(UPLOAD_FOLDER, filename))
 
         try:
-            VacationService().update_vacation(
+            VacationService(env=env).update_vacation(
                 vacation_id, country_id, vacation_info,
                 start_date, end_date, price, filename
             )
@@ -205,12 +206,12 @@ def delete_vacation(vacation_id):
     Deletes a vacation by ID and returns JSON response.
     Access restricted to admin users.
     """
-    vacation = VacationDAO().get_vacation_by_id(vacation_id)
+    vacation = VacationDAO(env=env).get_vacation_by_id(vacation_id)
     if not vacation:
         return jsonify({"success": False, "error": "Vacation not found"}), 404
 
     try:
-        VacationService().delete_vacation(vacation_id)
+        VacationService(env=env).delete_vacation(vacation_id)
         return jsonify({"success": True}), 200
 
     except Exception:
@@ -233,15 +234,15 @@ def toggle_like():
     except ValueError:
         return jsonify({"error": "Invalid ID format"}), 400
 
-    if LikeDAO().get_like_by_user_and_vacation(user_id, vacation_id):
-        UserService().remove_like(user_id, vacation_id)
+    if LikeDAO(env=env).get_like_by_user_and_vacation(user_id, vacation_id):
+        UserService(env=env).remove_like(user_id, vacation_id)
         action = "removed"
     else:
-        UserService().add_like(user_id, vacation_id)
+        UserService(env=env).add_like(user_id, vacation_id)
         action = "added"
 
     updated_vacation = next(
-        (v for v in VacationService().get_vacations() if v.vacation_id == vacation_id),
+        (v for v in VacationService(env=env).get_vacations() if v.vacation_id == vacation_id),
         None
     )
 
