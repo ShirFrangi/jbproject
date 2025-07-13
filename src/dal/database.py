@@ -25,7 +25,7 @@ def initialize_database(env: str ='dev') -> str:
     current_dir = os.path.dirname(os.path.abspath(__file__))
     sql_file_path = current_dir.replace('dal', 'init_db.sql')
     try:
-        with open(sql_file_path, 'r') as sql_file:
+        with open(sql_file_path, 'r', encoding='utf-8' ) as sql_file:
             sql_commands = sql_file.read()
         with data_base.cursor(row_factory=dict_row) as cur:
             cur.execute(

@@ -42,8 +42,8 @@ INSERT INTO roles (role_name) VALUES
     ('admin');
 
 INSERT INTO users (first_name, last_name, email, hashed_password, role_id) VALUES 
-    ('Shir', 'Frangi', 'shir@gmail.com', 'pbkdf2:sha256:1000000$LuQuSLWArUV5KcIV$f72f7b6f3e5ca84886f5ee1f671ea2574e5d9ad10b2159f3381e21537df2f07f', 2), 
-    ('Test', 'Test', 'test@gmail.com', 'pbkdf2:sha256:1000000$LuQuSLWArUV5KcIV$f72f7b6f3e5ca84886f5ee1f671ea2574e5d9ad10b2159f3381e21537df2f07f', 1);
+    ('admin', 'admin', 'admin@gmail.com', 'pbkdf2:sha256:1000000$LuQuSLWArUV5KcIV$f72f7b6f3e5ca84886f5ee1f671ea2574e5d9ad10b2159f3381e21537df2f07f', 2),
+    ('customer', 'customer', 'customer@gmail.com', 'pbkdf2:sha256:1000000$LuQuSLWArUV5KcIV$f72f7b6f3e5ca84886f5ee1f671ea2574e5d9ad10b2159f3381e21537df2f07f', 1);
 
 INSERT INTO countries (country_name) VALUES 
     ('צרפת'), ('ספרד'), ('ארצות הברית'), ('סין'), ('איטליה'), 
