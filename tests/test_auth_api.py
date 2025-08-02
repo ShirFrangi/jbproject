@@ -37,7 +37,7 @@ class TestAuthApi(unittest.TestCase):
         positive test: user login.
         """
         res = self.client.post(f"/{self.env}/login", data={
-            "email": "shir@gmail.com",
+            "email": "admin@gmail.com",
             "password": "1234"
         }, follow_redirects=True)
         self.assertEqual(res.status_code, 200)
@@ -124,7 +124,7 @@ class TestAuthApi(unittest.TestCase):
         res = self.client.post(f"/{self.env}/register", data={
             "firstName": "Test",
             "lastName": "User",
-            "email": "shir@gmail.com",
+            "email": "admin@gmail.com",
             "password": "1234"
         }, follow_redirects=True)
         self.assertEqual(res.status_code, 200)
